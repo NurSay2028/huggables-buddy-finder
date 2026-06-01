@@ -1,29 +1,49 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { Header } from "@/components/landing/Header";
+import { Hero } from "@/components/landing/Hero";
+import { Services } from "@/components/landing/Services";
+import { About } from "@/components/landing/About";
+import { Doctor } from "@/components/landing/Doctor";
+import { Testimonials } from "@/components/landing/Testimonials";
+import { FAQ } from "@/components/landing/FAQ";
+import { EmergencyCTA } from "@/components/landing/EmergencyCTA";
+import { Footer } from "@/components/landing/Footer";
 
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Your App" },
-      { name: "description", content: "Replace this with a one-sentence description of your app." },
-      { property: "og:title", content: "Your App" },
-      { property: "og:description", content: "Replace this with a one-sentence description of your app." },
+      { title: "Djoni Dentist — Nukusdagi stomatologiya | 24/7" },
+      {
+        name: "description",
+        content:
+          "Djoni Dentist — Nukus shahridagi zamonaviy stomatologiya. Tish davolash, breket, protezlash va oqartirish. 24/7 yordam. Tel: 91 380 86 67",
+      },
+      { property: "og:title", content: "Djoni Dentist — Nukusdagi stomatologiya" },
+      {
+        property: "og:description",
+        content:
+          "Ishonchli stomatologiya: davolash, breket, protezlash. Nukus, Aeroport hududi. 24/7 yordam.",
+      },
+      { property: "og:type", content: "website" },
     ],
   }),
   component: Index,
 });
 
-// IMPORTANT: Replace this placeholder. See ./README.md for routing conventions.
 function Index() {
   return (
-    <div
-      className="flex min-h-screen items-center justify-center"
-      style={{ backgroundColor: "#fcfbf8" }}
-    >
-      <img
-        data-lovable-blank-page-placeholder="REMOVE_THIS"
-        src="https://cdn.gpteng.co/blank-app-v1.svg"
-        alt="Your app will live here!"
-      />
+    <div className="min-h-screen bg-background">
+      <Header />
+      <main>
+        <Hero />
+        <Services />
+        <About />
+        <Doctor />
+        <Testimonials />
+        <FAQ />
+        <EmergencyCTA />
+      </main>
+      <Footer />
     </div>
   );
 }

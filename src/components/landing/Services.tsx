@@ -12,7 +12,7 @@ const services = [
     desc: "Zamonaviy va xavfsiz oqartirish texnologiyalari bilan yorqin tabassum.",
   },
   {
-    icon: Tooth,
+    icon: Crown,
     title: "Protezlash",
     desc: "Yo'qolgan tishlarni tiklash — qulay va tabiiy ko'rinishdagi protezlar.",
   },

@@ -1,4 +1,4 @@
-import { Stethoscope, Sparkles, Bluetooth as Tooth, Smile, Shield, Activity } from "lucide-react";
+import { Stethoscope, Sparkles, Crown, Smile, Shield, Activity } from "lucide-react";
 
 const services = [
   {

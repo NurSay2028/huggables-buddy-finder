@@ -22,7 +22,7 @@ export function Doctor() {
               loading="lazy"
               width={1024}
               height={1024}
-              className="h-full max-h-96 w-full object-cover"
+              className="h-80 w-full object-cover object-top sm:h-96"
             />
           </div>
 

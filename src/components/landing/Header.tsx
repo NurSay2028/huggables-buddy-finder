@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Menu, X, Phone } from "lucide-react";
+import { useLanding } from "@/lib/landing-content";
 
 const navLinks = [
   { label: "Biz haqimizda", href: "#about" },
@@ -9,21 +10,20 @@ const navLinks = [
   { label: "Savol-javob", href: "#faq" },
 ];
 
-function Logo() {
-  return (
+export function Header() {
+  const c = useLanding();
+  const [open, setOpen] = useState(false);
+
+  const Logo = () => (
     <a href="#home" className="flex items-center gap-2">
       <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary text-primary-foreground font-extrabold text-lg shadow-card">
-        DD
+        {c.brand.logo_text}
       </div>
       <span className="text-xl font-extrabold tracking-tight text-foreground">
-        Djoni Dentist
+        {c.brand.name}
       </span>
     </a>
   );
-}
-
-export function Header() {
-  const [open, setOpen] = useState(false);
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border/60 bg-background/85 backdrop-blur-md">
@@ -43,7 +43,7 @@ export function Header() {
         </nav>
 
         <a
-          href="tel:+998913808667"
+          href={`tel:${c.contact.phone}`}
           className="hidden items-center gap-2 rounded-full bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground shadow-card transition-transform hover:scale-105 lg:inline-flex"
         >
           <Phone className="h-4 w-4" />
@@ -73,7 +73,7 @@ export function Header() {
               </a>
             ))}
             <a
-              href="tel:+998913808667"
+              href={`tel:${c.contact.phone}`}
               className="mt-2 inline-flex items-center justify-center gap-2 rounded-full bg-primary px-5 py-3 text-sm font-semibold text-primary-foreground"
             >
               <Phone className="h-4 w-4" />

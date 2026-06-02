@@ -1,6 +1,8 @@
 import { Phone } from "lucide-react";
+import { useLanding } from "@/lib/landing-content";
 
 export function EmergencyCTA() {
+  const c = useLanding();
   return (
     <section className="py-8">
       <div className="mx-auto max-w-6xl px-4 sm:px-6">
@@ -10,19 +12,18 @@ export function EmergencyCTA() {
         >
           <div>
             <h2 className="text-2xl font-extrabold sm:text-3xl">
-              Shoshilinch tish yordami kerakmi?
+              {c.emergency.title}
             </h2>
             <p className="mt-2 max-w-lg text-sm opacity-90 sm:text-base">
-              Biz har qanday favqulodda holatda yordam berishga tayyormiz —
-              kuniga 24 soat, haftada 7 kun.
+              {c.emergency.text}
             </p>
           </div>
           <a
-            href="tel:+998913808667"
+            href={`tel:${c.contact.phone}`}
             className="inline-flex items-center gap-2 whitespace-nowrap rounded-full bg-background px-7 py-3.5 text-sm font-semibold text-primary shadow-card transition-transform hover:scale-105"
           >
             <Phone className="h-4 w-4" />
-            Bog'lanish
+            {c.emergency.cta}
           </a>
         </div>
       </div>

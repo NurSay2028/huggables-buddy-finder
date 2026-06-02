@@ -9,6 +9,7 @@ import { FAQ } from "@/components/landing/FAQ";
 import { EmergencyCTA } from "@/components/landing/EmergencyCTA";
 import { Footer } from "@/components/landing/Footer";
 import { BookingDialog } from "@/components/landing/BookingDialog";
+import { LandingContentProvider } from "@/lib/landing-content";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -33,19 +34,21 @@ export const Route = createFileRoute("/")({
 
 function Index() {
   return (
-    <div className="min-h-screen bg-background">
-      <Header />
-      <main>
-        <Hero />
-        <Services />
-        <About />
-        <Doctor />
-        <Testimonials />
-        <FAQ />
-        <EmergencyCTA />
-      </main>
-      <Footer />
-      <BookingDialog />
-    </div>
+    <LandingContentProvider>
+      <div className="min-h-screen bg-background">
+        <Header />
+        <main>
+          <Hero />
+          <Services />
+          <About />
+          <Doctor />
+          <Testimonials />
+          <FAQ />
+          <EmergencyCTA />
+        </main>
+        <Footer />
+        <BookingDialog />
+      </div>
+    </LandingContentProvider>
   );
 }

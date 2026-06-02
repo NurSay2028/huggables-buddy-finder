@@ -8,6 +8,7 @@ import { Testimonials } from "@/components/landing/Testimonials";
 import { FAQ } from "@/components/landing/FAQ";
 import { EmergencyCTA } from "@/components/landing/EmergencyCTA";
 import { Footer } from "@/components/landing/Footer";
+import { BookingDialog } from "@/components/landing/BookingDialog";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -44,6 +45,7 @@ function Index() {
         <EmergencyCTA />
       </main>
       <Footer />
+      <BookingDialog />
     </div>
   );
 }

@@ -354,8 +354,14 @@ export type Database = {
           id: string
           last_visit_at: string | null
           medical_conditions: string | null
+          next_visit_date: string | null
           notes: string | null
           phone: string
+          reminder_days_before: number
+          reminder_enabled: boolean
+          reminder_note: string | null
+          reminder_status: Database["public"]["Enums"]["reminder_status"]
+          treatment_type: Database["public"]["Enums"]["treatment_type"] | null
           updated_at: string
         }
         Insert: {
@@ -370,8 +376,14 @@ export type Database = {
           id?: string
           last_visit_at?: string | null
           medical_conditions?: string | null
+          next_visit_date?: string | null
           notes?: string | null
           phone: string
+          reminder_days_before?: number
+          reminder_enabled?: boolean
+          reminder_note?: string | null
+          reminder_status?: Database["public"]["Enums"]["reminder_status"]
+          treatment_type?: Database["public"]["Enums"]["treatment_type"] | null
           updated_at?: string
         }
         Update: {
@@ -386,8 +398,14 @@ export type Database = {
           id?: string
           last_visit_at?: string | null
           medical_conditions?: string | null
+          next_visit_date?: string | null
           notes?: string | null
           phone?: string
+          reminder_days_before?: number
+          reminder_enabled?: boolean
+          reminder_note?: string | null
+          reminder_status?: Database["public"]["Enums"]["reminder_status"]
+          treatment_type?: Database["public"]["Enums"]["treatment_type"] | null
           updated_at?: string
         }
         Relationships: [
@@ -549,6 +567,7 @@ export type Database = {
       appointment_status: "waiting" | "in_treatment" | "completed" | "cancelled"
       clinic_status: "pending" | "approved" | "blocked" | "suspended"
       payment_method: "cash" | "card" | "click" | "payme" | "bank_transfer"
+      reminder_status: "pending" | "contacted" | "completed"
       subscription_plan: "trial" | "starter" | "pro" | "enterprise"
       tooth_procedure:
         | "healthy"
@@ -560,6 +579,13 @@ export type Database = {
         | "whitening"
         | "braces"
         | "missing"
+      treatment_type:
+        | "braces"
+        | "implant"
+        | "cleaning"
+        | "filling"
+        | "consultation"
+        | "other"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -700,6 +726,7 @@ export const Constants = {
       appointment_status: ["waiting", "in_treatment", "completed", "cancelled"],
       clinic_status: ["pending", "approved", "blocked", "suspended"],
       payment_method: ["cash", "card", "click", "payme", "bank_transfer"],
+      reminder_status: ["pending", "contacted", "completed"],
       subscription_plan: ["trial", "starter", "pro", "enterprise"],
       tooth_procedure: [
         "healthy",
@@ -711,6 +738,14 @@ export const Constants = {
         "whitening",
         "braces",
         "missing",
+      ],
+      treatment_type: [
+        "braces",
+        "implant",
+        "cleaning",
+        "filling",
+        "consultation",
+        "other",
       ],
     },
   },

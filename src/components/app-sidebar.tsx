@@ -30,6 +30,7 @@ type NavItem = {
 
 const items: NavItem[] = [
   { label: "Boshqaruv paneli", to: "/app", icon: LayoutDashboard, end: true },
+  { label: "Yozilganlar", to: "/app/leads", icon: Inbox },
   { label: "Bemorlar", to: "/app/patients", icon: Users },
   { label: "Qabullar", to: "/app/appointments", icon: CalendarDays },
   { label: "Tish kartasi", to: "/app/dental-chart", icon: Stethoscope },
@@ -40,6 +41,7 @@ const items: NavItem[] = [
   { label: "Eslatmalar", to: "/app/reminders", icon: BellRing },
   { label: "Xabarnomalar", to: "/app/notifications", icon: BellRing },
   { label: "Xodimlar", to: "/app/staff", icon: Users },
+  { label: "Landing sahifa", to: "/app/landing-editor", icon: PanelsTopLeft },
   { label: "Sozlamalar", to: "/app/settings", icon: Settings },
 ];
 

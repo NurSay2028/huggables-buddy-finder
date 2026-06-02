@@ -1,4 +1,5 @@
 import { Phone, Mail, MapPin, Send } from "lucide-react";
+import { useLanding } from "@/lib/landing-content";
 
 const links = [
   { label: "Biz haqimizda", href: "#about" },
@@ -8,6 +9,7 @@ const links = [
 ];
 
 export function Footer() {
+  const c = useLanding();
   return (
     <footer
       className="relative overflow-hidden pt-14 text-primary-foreground"
@@ -18,14 +20,11 @@ export function Footer() {
           <div>
             <div className="flex items-center gap-2">
               <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-background text-primary font-extrabold">
-                DD
+                {c.brand.logo_text}
               </div>
-              <span className="text-xl font-extrabold">Djoni Dentist</span>
+              <span className="text-xl font-extrabold">{c.brand.name}</span>
             </div>
-            <p className="mt-4 text-sm opacity-90">
-              Nukus shahridagi zamonaviy stomatologiya markazi. Sog'lom va
-              chiroyli tabassum uchun.
-            </p>
+            <p className="mt-4 text-sm opacity-90">{c.footer.about}</p>
           </div>
 
           <div>
@@ -46,14 +45,14 @@ export function Footer() {
             <ul className="mt-4 space-y-3 text-sm opacity-90">
               <li className="flex items-center gap-2">
                 <Phone className="h-4 w-4 shrink-0" />
-                <a href="tel:+998913808667" className="hover:underline">
-                  91 380 86 67
+                <a href={`tel:${c.contact.phone}`} className="hover:underline">
+                  {c.contact.phone_display}
                 </a>
               </li>
               <li className="flex items-center gap-2">
                 <Send className="h-4 w-4 shrink-0" />
                 <a
-                  href="https://teleg.one/janibek_saqtabaev"
+                  href={c.contact.telegram_url}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="hover:underline"
@@ -63,7 +62,7 @@ export function Footer() {
               </li>
               <li className="flex items-center gap-2">
                 <Mail className="h-4 w-4 shrink-0" />
-                example@gmail.com
+                {c.contact.email}
               </li>
             </ul>
           </div>
@@ -72,13 +71,13 @@ export function Footer() {
             <h4 className="font-bold">Manzil</h4>
             <p className="mt-4 flex items-start gap-2 text-sm opacity-90">
               <MapPin className="mt-0.5 h-4 w-4 shrink-0" />
-              Nukus shahri, Aeroport hududi. Ish vaqti: 24/7
+              {c.contact.address}
             </p>
           </div>
         </div>
 
         <div className="border-t border-primary-foreground/20 py-6 text-center text-sm opacity-80">
-          © 2026 Djoni Dentist. Barcha huquqlar himoyalangan.
+          {c.footer.copyright}
         </div>
       </div>
     </footer>

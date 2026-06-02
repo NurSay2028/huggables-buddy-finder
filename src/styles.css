@@ -150,3 +150,45 @@
     font-family: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
   }
 }
+
+/* ===== CRM admin panel tokens & utilities ===== */
+@theme inline {
+  --color-primary-soft: var(--primary-soft);
+  --color-success: var(--success);
+  --color-success-foreground: var(--success-foreground);
+  --color-warning: var(--warning);
+  --color-warning-foreground: var(--warning-foreground);
+  --shadow-soft: 0 1px 2px oklch(0.2 0.04 264 / 0.04), 0 4px 16px oklch(0.2 0.04 264 / 0.06);
+  --shadow-elevated: 0 8px 32px oklch(0.2 0.04 264 / 0.08);
+}
+
+:root {
+  --primary-soft: oklch(0.95 0.03 263);
+  --success: oklch(0.68 0.15 155);
+  --success-foreground: oklch(0.99 0 0);
+  --warning: oklch(0.78 0.14 75);
+  --warning-foreground: oklch(0.2 0.05 60);
+}
+
+.dark {
+  --primary-soft: oklch(0.3 0.07 263);
+  --success: oklch(0.7 0.15 155);
+  --success-foreground: oklch(0.15 0.02 150);
+  --warning: oklch(0.78 0.14 75);
+  --warning-foreground: oklch(0.15 0.05 60);
+}
+
+@layer components {
+  .input {
+    @apply block w-full rounded-lg border border-input bg-background px-3 py-2.5 text-sm text-foreground shadow-soft outline-none transition placeholder:text-muted-foreground focus:border-primary focus:ring-2 focus:ring-primary/20;
+  }
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2 rounded-lg bg-primary px-4 py-2.5 text-sm font-medium text-primary-foreground shadow-soft transition hover:opacity-90 disabled:opacity-60;
+  }
+  .btn-ghost {
+    @apply inline-flex items-center justify-center gap-2 rounded-lg border border-input bg-card px-4 py-2.5 text-sm font-medium text-foreground transition hover:bg-accent;
+  }
+  .card {
+    @apply rounded-2xl border border-border bg-card shadow-soft;
+  }
+}

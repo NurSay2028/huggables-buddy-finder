@@ -1,4 +1,5 @@
 import { Users, Star, Phone } from "lucide-react";
+import { openBooking } from "@/components/landing/BookingDialog";
 import heroPatient from "@/assets/hero-patient.jpg";
 import faqTreatment from "@/assets/faq-treatment.jpg";
 import confidentSmile from "@/assets/confident-smile.jpg";
@@ -29,12 +30,12 @@ export function Hero() {
           </p>
 
           <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
-            <a
-              href="#services"
+            <button
+              onClick={openBooking}
               className="inline-flex w-full items-center justify-center rounded-full bg-primary px-7 py-3.5 text-sm font-semibold text-primary-foreground shadow-elegant transition-transform hover:scale-105 sm:w-auto"
             >
-              Xizmatlarni ko'rish
-            </a>
+              Qabulga yozilish
+            </button>
             <a
               href="tel:+998913808667"
               className="inline-flex w-full items-center justify-center gap-2 rounded-full border border-primary bg-background px-7 py-3.5 text-sm font-semibold text-primary transition-colors hover:bg-accent sm:w-auto"

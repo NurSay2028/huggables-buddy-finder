@@ -3,7 +3,6 @@ import { useEffect, useRef, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { PageHeader } from "@/components/page-header";
 import {
-  DEFAULT_CONTENT,
   mergeContent,
   type LandingContent,
 } from "@/lib/landing-content";

@@ -77,14 +77,18 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Lovable App" },
-      { name: "description", content: "Lovable Generated Project" },
+      { title: "Djoni Dentist" },
+      { name: "description", content: "My Dev Hub is a web application for managing client information and projects." },
       { name: "author", content: "Lovable" },
-      { property: "og:title", content: "Lovable App" },
-      { property: "og:description", content: "Lovable Generated Project" },
+      { property: "og:title", content: "Djoni Dentist" },
+      { property: "og:description", content: "My Dev Hub is a web application for managing client information and projects." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
       { name: "twitter:site", content: "@Lovable" },
+      { name: "twitter:title", content: "Djoni Dentist" },
+      { name: "twitter:description", content: "My Dev Hub is a web application for managing client information and projects." },
+      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/11ec7fe9-d5e8-4236-91c6-ae75a52c0025/id-preview-d4a3644b--b76fdc16-6662-4231-aa76-ff14fdd8194e.lovable.app-1780359058676.png" },
+      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/11ec7fe9-d5e8-4236-91c6-ae75a52c0025/id-preview-d4a3644b--b76fdc16-6662-4231-aa76-ff14fdd8194e.lovable.app-1780359058676.png" },
     ],
     links: [
       {

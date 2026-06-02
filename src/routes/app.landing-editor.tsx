@@ -63,7 +63,7 @@ function LandingEditorPage() {
     setSaving(true);
     const { error } = await supabase.from("landing_content").upsert({
       id: 1,
-      content: sanitizeForSave(content),
+      content: sanitizeForSave(content) as unknown as Record<string, never>,
       updated_at: new Date().toISOString(),
     });
     setSaving(false);
@@ -426,6 +426,3 @@ function ListEditor<T>({
     </div>
   );
 }
-
-// keep default export usage of DEFAULT_CONTENT type-safe import
-void DEFAULT_CONTENT;

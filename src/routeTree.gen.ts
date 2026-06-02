@@ -22,6 +22,7 @@ import { Route as AppPaymentsRouteImport } from './routes/app.payments'
 import { Route as AppPatientsRouteImport } from './routes/app.patients'
 import { Route as AppNotificationsRouteImport } from './routes/app.notifications'
 import { Route as AppLeadsRouteImport } from './routes/app.leads'
+import { Route as AppLandingEditorRouteImport } from './routes/app.landing-editor'
 import { Route as AppInventoryRouteImport } from './routes/app.inventory'
 import { Route as AppDoctorsRouteImport } from './routes/app.doctors'
 import { Route as AppDentalChartRouteImport } from './routes/app.dental-chart'
@@ -92,6 +93,11 @@ const AppLeadsRoute = AppLeadsRouteImport.update({
   path: '/leads',
   getParentRoute: () => AppRoute,
 } as any)
+const AppLandingEditorRoute = AppLandingEditorRouteImport.update({
+  id: '/landing-editor',
+  path: '/landing-editor',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppInventoryRoute = AppInventoryRouteImport.update({
   id: '/inventory',
   path: '/inventory',
@@ -122,6 +128,7 @@ export interface FileRoutesByFullPath {
   '/app/dental-chart': typeof AppDentalChartRoute
   '/app/doctors': typeof AppDoctorsRoute
   '/app/inventory': typeof AppInventoryRoute
+  '/app/landing-editor': typeof AppLandingEditorRoute
   '/app/leads': typeof AppLeadsRoute
   '/app/notifications': typeof AppNotificationsRoute
   '/app/patients': typeof AppPatientsRoute
@@ -140,6 +147,7 @@ export interface FileRoutesByTo {
   '/app/dental-chart': typeof AppDentalChartRoute
   '/app/doctors': typeof AppDoctorsRoute
   '/app/inventory': typeof AppInventoryRoute
+  '/app/landing-editor': typeof AppLandingEditorRoute
   '/app/leads': typeof AppLeadsRoute
   '/app/notifications': typeof AppNotificationsRoute
   '/app/patients': typeof AppPatientsRoute
@@ -160,6 +168,7 @@ export interface FileRoutesById {
   '/app/dental-chart': typeof AppDentalChartRoute
   '/app/doctors': typeof AppDoctorsRoute
   '/app/inventory': typeof AppInventoryRoute
+  '/app/landing-editor': typeof AppLandingEditorRoute
   '/app/leads': typeof AppLeadsRoute
   '/app/notifications': typeof AppNotificationsRoute
   '/app/patients': typeof AppPatientsRoute
@@ -181,6 +190,7 @@ export interface FileRouteTypes {
     | '/app/dental-chart'
     | '/app/doctors'
     | '/app/inventory'
+    | '/app/landing-editor'
     | '/app/leads'
     | '/app/notifications'
     | '/app/patients'
@@ -199,6 +209,7 @@ export interface FileRouteTypes {
     | '/app/dental-chart'
     | '/app/doctors'
     | '/app/inventory'
+    | '/app/landing-editor'
     | '/app/leads'
     | '/app/notifications'
     | '/app/patients'
@@ -218,6 +229,7 @@ export interface FileRouteTypes {
     | '/app/dental-chart'
     | '/app/doctors'
     | '/app/inventory'
+    | '/app/landing-editor'
     | '/app/leads'
     | '/app/notifications'
     | '/app/patients'
@@ -329,6 +341,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppLeadsRouteImport
       parentRoute: typeof AppRoute
     }
+    '/app/landing-editor': {
+      id: '/app/landing-editor'
+      path: '/landing-editor'
+      fullPath: '/app/landing-editor'
+      preLoaderRoute: typeof AppLandingEditorRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/app/inventory': {
       id: '/app/inventory'
       path: '/inventory'
@@ -365,6 +384,7 @@ interface AppRouteChildren {
   AppDentalChartRoute: typeof AppDentalChartRoute
   AppDoctorsRoute: typeof AppDoctorsRoute
   AppInventoryRoute: typeof AppInventoryRoute
+  AppLandingEditorRoute: typeof AppLandingEditorRoute
   AppLeadsRoute: typeof AppLeadsRoute
   AppNotificationsRoute: typeof AppNotificationsRoute
   AppPatientsRoute: typeof AppPatientsRoute
@@ -381,6 +401,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppDentalChartRoute: AppDentalChartRoute,
   AppDoctorsRoute: AppDoctorsRoute,
   AppInventoryRoute: AppInventoryRoute,
+  AppLandingEditorRoute: AppLandingEditorRoute,
   AppLeadsRoute: AppLeadsRoute,
   AppNotificationsRoute: AppNotificationsRoute,
   AppPatientsRoute: AppPatientsRoute,
@@ -403,3 +424,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}

@@ -63,10 +63,10 @@ function NoClinicScreen() {
         </div>
         <h1 className="text-xl font-semibold">Klinika biriktirilmagan</h1>
         <p className="mt-2 text-sm text-muted-foreground">
-          Siz tizimga kirdingiz, lekin hech qanday klinikaga biriktirilmagansiz. Boshlash uchun klinikangizni ro‘yxatdan o‘tkazing.
+          Siz tizimga kirdingiz, lekin hech qanday klinikaga biriktirilmagansiz. Administrator bilan bog‘laning.
         </p>
-        <Link to="/register" className="btn-primary mt-6">
-          Klinikani ro‘yxatdan o‘tkazish
+        <Link to="/login" className="btn-primary mt-6">
+          Qaytadan kirish
         </Link>
       </div>
     </div>

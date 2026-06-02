@@ -14,6 +14,8 @@ import {
   Shield,
   BellRing,
   Menu,
+  Inbox,
+  PanelsTopLeft,
 } from "lucide-react";
 import { useState } from "react";
 import { useAuth } from "@/hooks/use-auth";

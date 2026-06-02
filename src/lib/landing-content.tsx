@@ -168,12 +168,22 @@ export const DEFAULT_CONTENT: LandingContent = {
   },
 };
 
-/** Deep-merge a stored partial onto the defaults (section by section). */
+/** Deep-merge a stored partial onto the defaults (section by section).
+ * Empty/blank values are ignored so the defaults always win. */
 export function mergeContent(stored: unknown): LandingContent {
   const s = (stored ?? {}) as Record<string, Record<string, unknown>>;
   const out = {} as Record<string, unknown>;
   for (const key of Object.keys(DEFAULT_CONTENT) as (keyof LandingContent)[]) {
-    out[key] = { ...(DEFAULT_CONTENT[key] as object), ...(s[key] ?? {}) };
+    const section = { ...(DEFAULT_CONTENT[key] as Record<string, unknown>) };
+    const storedSection = s[key] ?? {};
+    for (const field of Object.keys(storedSection)) {
+      const v = storedSection[field];
+      if (v === undefined || v === null) continue;
+      if (typeof v === "string" && v.trim() === "") continue;
+      if (Array.isArray(v) && v.length === 0) continue;
+      section[field] = v;
+    }
+    out[key] = section;
   }
   return out as unknown as LandingContent;
 }

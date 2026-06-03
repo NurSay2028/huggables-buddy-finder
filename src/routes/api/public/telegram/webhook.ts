@@ -56,7 +56,7 @@ export const Route = createFileRoute("/api/public/telegram/webhook")({
         if (text === "/start" || text.toLowerCase() === "start") {
           await reply(
             chatId,
-            "Assalomu alaykum! Klinika qabul eslatmalarini olish uchun telefon raqamingiz va klinikadan olgan kodingizni yuboring.\n\nNamuna:\n<code>+998901234567 AB12CD</code>",
+            "Assalawma aleykum! Klinika qabıllaw esletpelerin alıw ushın telefon nomerińizdi hám klinikadan alǵan kodıńızdı jiberiń.\n\nÚlgi:\n<code>+998901234567 AB12CD</code>",
           );
           return Response.json({ ok: true });
         }
@@ -69,7 +69,7 @@ export const Route = createFileRoute("/api/public/telegram/webhook")({
         if (!codeMatch || phoneDigits.length < 7) {
           await reply(
             chatId,
-            "Iltimos telefon raqamingiz va kodingizni birga yuboring.\n\nNamuna:\n<code>+998901234567 AB12CD</code>",
+            "Iltimas telefon nomerińizdi hám kodıńızdı birge jiberiń.\n\nÚlgi:\n<code>+998901234567 AB12CD</code>",
           );
           return Response.json({ ok: true });
         }
@@ -82,7 +82,7 @@ export const Route = createFileRoute("/api/public/telegram/webhook")({
           .maybeSingle();
 
         if (!patient) {
-          await reply(chatId, "Kechirasiz, bunday kod topilmadi. Kodni tekshirib qaytadan yuboring.");
+          await reply(chatId, "Keshiriń, bunday kod tabılmadı. Kodtı tekserip qaytadan jiberiń.");
           return Response.json({ ok: true });
         }
 
@@ -95,7 +95,7 @@ export const Route = createFileRoute("/api/public/telegram/webhook")({
         if (!phoneOk) {
           await reply(
             chatId,
-            "Telefon raqami kodga mos kelmadi. Klinikada ro‘yxatdan o‘tgan raqamingizni yuboring.",
+            "Telefon nomeri kod penen sáykes kelmedi.\nKlinikada dizimnen ótken nomerińizdi jiberiń.",
           );
           return Response.json({ ok: true });
         }
@@ -107,7 +107,7 @@ export const Route = createFileRoute("/api/public/telegram/webhook")({
 
         await reply(
           chatId,
-          `Rahmat, ${(patient as { full_name: string }).full_name}! Telegram hisobingiz muvaffaqiyatli ulandi. Endi qabul eslatmalarini shu yerda olasiz. ✅`,
+          `Raxmet, ${(patient as { full_name: string }).full_name}! Telegram akkauntıńız tabıslı jalǵandı. Endi qabıllaw esletpelerin usı jerde alasız. ✅`,
         );
         return Response.json({ ok: true });
       },

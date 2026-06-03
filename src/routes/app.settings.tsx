@@ -145,6 +145,13 @@ function SettingsPage() {
           <button type="submit" disabled={saving} className="btn-primary">{saving ? "Saqlanmoqda…" : "Saqlash"}</button>
         </div>
       </form>
+      <ImageCropDialog
+        file={cropFile}
+        aspect={1}
+        maxWidth={512}
+        onCancel={() => setCropFile(null)}
+        onCropped={onCropped}
+      />
     </div>
   );
 }

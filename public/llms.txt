@@ -1,0 +1,9 @@
+# Djoni Dentist
+
+> Nukus shahridagi zamonaviy stomatologiya klinikasi. Tish davolash, breket, protezlash va oqartirish xizmatlari, 24/7 shoshilinch yordam. Tel: 91 380 86 67.
+
+Djoni Dentist — Nukusdagi (Aeroport hududi) stomatologiya markazi bo'lib, bemorlarga zamonaviy va og'riqsiz davolash xizmatlarini taklif etadi. Onlayn yoki Telegram orqali qabulga yozilish mumkin.
+
+## Pages
+
+- [Bosh sahifa](/): Klinika xizmatlari, shifokorlar, sharhlar va tez-tez beriladigan savollar.

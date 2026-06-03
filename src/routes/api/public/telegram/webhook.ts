@@ -82,7 +82,7 @@ export const Route = createFileRoute("/api/public/telegram/webhook")({
           .maybeSingle();
 
         if (!patient) {
-          await reply(chatId, "Kechirasiz, bunday kod topilmadi. Kodni tekshirib qaytadan yuboring.");
+          await reply(chatId, "Keshiriń, bunday kod tabılmadı. Kodtı tekserip qaytadan jiberiń.");
           return Response.json({ ok: true });
         }
 

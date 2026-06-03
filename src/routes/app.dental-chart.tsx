@@ -157,7 +157,7 @@ function ToothBtn({ num, proc, onClick }: { num: number; proc?: Procedure; onCli
   return (
     <button
       onClick={onClick}
-      className={`aspect-[3/4] rounded-md border border-border text-[10px] font-medium transition hover:scale-105 ${proc ? PROC_COLOR[proc] : "bg-card"}`}
+      className={`grid aspect-square place-items-center rounded-md border border-border text-xs font-semibold transition active:scale-95 sm:hover:scale-105 ${proc ? PROC_COLOR[proc] : "bg-card"}`}
       title={proc ? PROC_LABEL[proc] : "Sog‘lom"}
     >
       {num}

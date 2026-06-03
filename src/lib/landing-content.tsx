@@ -15,6 +15,15 @@ export type Service = { title: string; desc: string };
 export type Review = { name: string; text: string };
 export type Faq = { q: string; a: string };
 export type Stat = { value: string; label: string };
+export type DoctorEntry = {
+  name: string;
+  badge: string;
+  bio: string;
+  hours: string;
+  location: string;
+  image: string;
+  cta: string;
+};
 
 export interface LandingContent {
   brand: { name: string; logo_text: string };
@@ -58,6 +67,7 @@ export interface LandingContent {
     location: string;
     image: string;
     cta: string;
+    list: DoctorEntry[];
   };
   testimonials: {
     title: string;
@@ -129,6 +139,17 @@ export const DEFAULT_CONTENT: LandingContent = {
     location: "Nukus shahri, Aeroport hududi",
     image: doctorDjoni,
     cta: "91 380 86 67",
+    list: [
+      {
+        name: "Janibek Saqtabaev",
+        badge: "Stomatolog | Expert",
+        bio: "Davolash, breket va protezlash bo'yicha mutaxassis. 10 000+ dan ortiq bemorni muvaffaqiyatli davolagan. Har bir bemorga g'amxo'rlik va zamonaviy yondashuv.",
+        hours: "Ish vaqti: 24/7",
+        location: "Nukus shahri, Aeroport hududi",
+        image: doctorDjoni,
+        cta: "91 380 86 67",
+      },
+    ],
   },
   testimonials: {
     title: "Bemorlar fikri",

@@ -29,6 +29,7 @@ import { Route as AppDentalChartRouteImport } from './routes/app.dental-chart'
 import { Route as AppAppointmentsRouteImport } from './routes/app.appointments'
 import { Route as ApiPublicTelegramWebhookRouteImport } from './routes/api/public/telegram/webhook'
 import { Route as ApiPublicHooksSendRemindersRouteImport } from './routes/api/public/hooks/send-reminders'
+import { Route as ApiPublicHooksProcessScheduledRouteImport } from './routes/api/public/hooks/process-scheduled'
 
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
@@ -132,6 +133,12 @@ const ApiPublicHooksSendRemindersRoute =
     path: '/api/public/hooks/send-reminders',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ApiPublicHooksProcessScheduledRoute =
+  ApiPublicHooksProcessScheduledRouteImport.update({
+    id: '/api/public/hooks/process-scheduled',
+    path: '/api/public/hooks/process-scheduled',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -152,6 +159,7 @@ export interface FileRoutesByFullPath {
   '/app/settings': typeof AppSettingsRoute
   '/app/staff': typeof AppStaffRoute
   '/app/': typeof AppIndexRoute
+  '/api/public/hooks/process-scheduled': typeof ApiPublicHooksProcessScheduledRoute
   '/api/public/hooks/send-reminders': typeof ApiPublicHooksSendRemindersRoute
   '/api/public/telegram/webhook': typeof ApiPublicTelegramWebhookRoute
 }
@@ -173,6 +181,7 @@ export interface FileRoutesByTo {
   '/app/settings': typeof AppSettingsRoute
   '/app/staff': typeof AppStaffRoute
   '/app': typeof AppIndexRoute
+  '/api/public/hooks/process-scheduled': typeof ApiPublicHooksProcessScheduledRoute
   '/api/public/hooks/send-reminders': typeof ApiPublicHooksSendRemindersRoute
   '/api/public/telegram/webhook': typeof ApiPublicTelegramWebhookRoute
 }
@@ -196,6 +205,7 @@ export interface FileRoutesById {
   '/app/settings': typeof AppSettingsRoute
   '/app/staff': typeof AppStaffRoute
   '/app/': typeof AppIndexRoute
+  '/api/public/hooks/process-scheduled': typeof ApiPublicHooksProcessScheduledRoute
   '/api/public/hooks/send-reminders': typeof ApiPublicHooksSendRemindersRoute
   '/api/public/telegram/webhook': typeof ApiPublicTelegramWebhookRoute
 }
@@ -220,6 +230,7 @@ export interface FileRouteTypes {
     | '/app/settings'
     | '/app/staff'
     | '/app/'
+    | '/api/public/hooks/process-scheduled'
     | '/api/public/hooks/send-reminders'
     | '/api/public/telegram/webhook'
   fileRoutesByTo: FileRoutesByTo
@@ -241,6 +252,7 @@ export interface FileRouteTypes {
     | '/app/settings'
     | '/app/staff'
     | '/app'
+    | '/api/public/hooks/process-scheduled'
     | '/api/public/hooks/send-reminders'
     | '/api/public/telegram/webhook'
   id:
@@ -263,6 +275,7 @@ export interface FileRouteTypes {
     | '/app/settings'
     | '/app/staff'
     | '/app/'
+    | '/api/public/hooks/process-scheduled'
     | '/api/public/hooks/send-reminders'
     | '/api/public/telegram/webhook'
   fileRoutesById: FileRoutesById
@@ -272,6 +285,7 @@ export interface RootRouteChildren {
   AdminRoute: typeof AdminRoute
   AppRoute: typeof AppRouteWithChildren
   LoginRoute: typeof LoginRoute
+  ApiPublicHooksProcessScheduledRoute: typeof ApiPublicHooksProcessScheduledRoute
   ApiPublicHooksSendRemindersRoute: typeof ApiPublicHooksSendRemindersRoute
   ApiPublicTelegramWebhookRoute: typeof ApiPublicTelegramWebhookRoute
 }
@@ -418,6 +432,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicHooksSendRemindersRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/hooks/process-scheduled': {
+      id: '/api/public/hooks/process-scheduled'
+      path: '/api/public/hooks/process-scheduled'
+      fullPath: '/api/public/hooks/process-scheduled'
+      preLoaderRoute: typeof ApiPublicHooksProcessScheduledRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -462,6 +483,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminRoute: AdminRoute,
   AppRoute: AppRouteWithChildren,
   LoginRoute: LoginRoute,
+  ApiPublicHooksProcessScheduledRoute: ApiPublicHooksProcessScheduledRoute,
   ApiPublicHooksSendRemindersRoute: ApiPublicHooksSendRemindersRoute,
   ApiPublicTelegramWebhookRoute: ApiPublicTelegramWebhookRoute,
 }

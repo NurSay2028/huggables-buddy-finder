@@ -182,17 +182,28 @@ function LandingEditorPage() {
         </Section>
 
         {/* DOCTOR */}
-        <Section title="Shifokor">
+        <Section title="Shifokorlar">
           <Text label="Bo‘lim sarlavhasi" value={c.doctor.section_title} onChange={(v) => setField("doctor", "section_title", v)} />
           <Text label="Bo‘lim tavsifi" value={c.doctor.section_subtitle} onChange={(v) => setField("doctor", "section_subtitle", v)} />
-          <Text label="Belgi (badge)" value={c.doctor.badge} onChange={(v) => setField("doctor", "badge", v)} />
-          <Text label="Ism" value={c.doctor.name} onChange={(v) => setField("doctor", "name", v)} />
-          <Area label="Bio" value={c.doctor.bio} onChange={(v) => setField("doctor", "bio", v)} />
-          <Text label="Ish vaqti" value={c.doctor.hours} onChange={(v) => setField("doctor", "hours", v)} />
-          <Text label="Manzil" value={c.doctor.location} onChange={(v) => setField("doctor", "location", v)} />
-          <Text label="Tugma matni" value={c.doctor.cta} onChange={(v) => setField("doctor", "cta", v)} />
-          <Img label="Rasm" value={c.doctor.image} onChange={(v) => setField("doctor", "image", v)} />
+          <ListEditor
+            items={c.doctor.list}
+            onChange={(items) => setField("doctor", "list", items)}
+            empty={{ name: "", badge: "", bio: "", hours: "", location: "", image: "", cta: "" }}
+            addLabel="Shifokor qo'shish"
+            render={(item, update) => (
+              <>
+                <Text label="Ism" value={item.name} onChange={(v) => update({ ...item, name: v })} />
+                <Text label="Belgi (badge)" value={item.badge} onChange={(v) => update({ ...item, badge: v })} />
+                <Area label="Bio" value={item.bio} onChange={(v) => update({ ...item, bio: v })} />
+                <Text label="Ish vaqti" value={item.hours} onChange={(v) => update({ ...item, hours: v })} />
+                <Text label="Manzil" value={item.location} onChange={(v) => update({ ...item, location: v })} />
+                <Text label="Tugma matni" value={item.cta} onChange={(v) => update({ ...item, cta: v })} />
+                <Img label="Rasm" value={item.image} onChange={(v) => update({ ...item, image: v })} />
+              </>
+            )}
+          />
         </Section>
+
 
         {/* TESTIMONIALS */}
         <Section title="Sharhlar">

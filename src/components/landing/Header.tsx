@@ -3,11 +3,11 @@ import { Menu, X, Phone } from "lucide-react";
 import { useLanding } from "@/lib/landing-content";
 
 const navLinks = [
-  { label: "Biz haqimizda", href: "#about" },
-  { label: "Xizmatlar", href: "#services" },
-  { label: "Sharhlar", href: "#testimonials" },
-  { label: "Shifokor", href: "#doctor" },
-  { label: "Savol-javob", href: "#faq" },
+  { label: "Biz haqqımızda", href: "#about" },
+  { label: "Xızmetler", href: "#services" },
+  { label: "Pikirler", href: "#testimonials" },
+  { label: "Shıpaker", href: "#doctor" },
+  { label: "Soraw-juwap", href: "#faq" },
 ];
 
 export function Header() {

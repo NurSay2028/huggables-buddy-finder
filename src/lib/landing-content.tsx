@@ -139,6 +139,17 @@ export const DEFAULT_CONTENT: LandingContent = {
     location: "Nukus shahri, Aeroport hududi",
     image: doctorDjoni,
     cta: "91 380 86 67",
+    list: [
+      {
+        name: "Janibek Saqtabaev",
+        badge: "Stomatolog | Expert",
+        bio: "Davolash, breket va protezlash bo'yicha mutaxassis. 10 000+ dan ortiq bemorni muvaffaqiyatli davolagan. Har bir bemorga g'amxo'rlik va zamonaviy yondashuv.",
+        hours: "Ish vaqti: 24/7",
+        location: "Nukus shahri, Aeroport hududi",
+        image: doctorDjoni,
+        cta: "91 380 86 67",
+      },
+    ],
   },
   testimonials: {
     title: "Bemorlar fikri",

@@ -252,6 +252,24 @@ function ProcForm({ tooth, patientId, clinicId, doctors, onClose, onSaved }: {
           <span className="mb-1 block text-xs font-medium text-muted-foreground">Izoh</span>
           <textarea rows={2} className="input" value={form.notes} onChange={(e) => setForm({ ...form, notes: e.target.value })} />
         </label>
+        <div className="grid gap-3 sm:grid-cols-2">
+          <ImageUploadBox
+            label="Oldingi rasm"
+            value={form.before_image_url}
+            loading={uploading === "before"}
+            inputRef={beforeRef}
+            onPick={(e) => onPickImage(e, "before_image_url")}
+            onClear={() => setForm((prev) => ({ ...prev, before_image_url: "" }))}
+          />
+          <ImageUploadBox
+            label="Keyingi rasm"
+            value={form.after_image_url}
+            loading={uploading === "after"}
+            inputRef={afterRef}
+            onPick={(e) => onPickImage(e, "after_image_url")}
+            onClear={() => setForm((prev) => ({ ...prev, after_image_url: "" }))}
+          />
+        </div>
         <div className="flex justify-end gap-2 pt-2">
           <button type="button" onClick={onClose} className="btn-ghost">Bekor qilish</button>
           <button type="submit" disabled={saving} className="btn-primary">{saving ? "…" : "Saqlash"}</button>

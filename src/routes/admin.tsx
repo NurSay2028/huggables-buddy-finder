@@ -7,7 +7,13 @@ import { toast } from "sonner";
 
 export const Route = createFileRoute("/admin")({
   component: AdminPage,
-  head: () => ({ meta: [{ title: "Super admin — Patient" }] }),
+  head: () => ({
+    meta: [
+      { title: "Super admin — Djoni Dentist" },
+      { name: "description", content: "Djoni Dentist super admin boshqaruv paneli." },
+      { name: "robots", content: "noindex, nofollow" },
+    ],
+  }),
 });
 
 type ClinicRow = {

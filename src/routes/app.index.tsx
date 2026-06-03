@@ -129,7 +129,8 @@ function Dashboard() {
         totalDebt,
         remindersDue,
         aiRequests: aiReqs.count ?? 0,
-        revenueByMonth: months.map(({ m, v }) => ({ m, v })),
+        monthRevenue, monthExpenses, monthProfit,
+        revenueByMonth: months.map(({ m, v, e }) => ({ m, v, e })),
         topDoctor,
         schedule: (todayList.data ?? []).map((a: any) => ({
           time: new Date(a.starts_at).toLocaleTimeString("uz-UZ", { hour: "2-digit", minute: "2-digit" }),

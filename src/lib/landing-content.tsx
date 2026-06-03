@@ -15,6 +15,15 @@ export type Service = { title: string; desc: string };
 export type Review = { name: string; text: string };
 export type Faq = { q: string; a: string };
 export type Stat = { value: string; label: string };
+export type DoctorEntry = {
+  name: string;
+  badge: string;
+  bio: string;
+  hours: string;
+  location: string;
+  image: string;
+  cta: string;
+};
 
 export interface LandingContent {
   brand: { name: string; logo_text: string };

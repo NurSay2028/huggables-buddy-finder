@@ -33,6 +33,10 @@ export const Route = createFileRoute("/")({
           "Ishonchli stomatologiya: davolash, breket, protezlash. Nukus, Aeroport hududi. 24/7 yordam.",
       },
       { property: "og:type", content: "website" },
+      { property: "og:url", content: "https://www.drjanibek.uz/" },
+    ],
+    links: [
+      { rel: "canonical", href: "https://www.drjanibek.uz/" },
     ],
   }),
   component: Index,

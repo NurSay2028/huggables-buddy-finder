@@ -4,7 +4,8 @@ import { useAuth } from "@/hooks/use-auth";
 import { supabase } from "@/integrations/supabase/client";
 import { PageHeader, EmptyState, Modal } from "@/components/page-header";
 import { fmtDateTime, fmtSum } from "@/lib/format";
-import { Plus, Trash2, Wallet } from "lucide-react";
+import { exportToExcel } from "@/lib/excel-export";
+import { Plus, Trash2, Wallet, FileDown } from "lucide-react";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/app/payments")({

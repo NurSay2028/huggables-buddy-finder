@@ -82,8 +82,12 @@ function DoctorsPage() {
             <div key={d.id} className="card p-5">
               <div className="flex items-start justify-between">
                 <div className="flex items-center gap-3">
-                  <div className="grid h-10 w-10 place-items-center rounded-xl bg-primary-soft text-primary">
-                    <UserCog className="h-5 w-5" />
+                  <div className="grid h-12 w-12 place-items-center overflow-hidden rounded-xl bg-primary-soft text-primary">
+                    {d.photo_url ? (
+                      <img src={d.photo_url} alt={d.full_name} className="h-full w-full object-cover" />
+                    ) : (
+                      <UserCog className="h-5 w-5" />
+                    )}
                   </div>
                   <div>
                     <div className="font-semibold">{d.full_name}</div>
@@ -133,10 +137,13 @@ function DoctorForm({ doctor, clinicId, onClose, onSaved }: {
     full_name: doctor?.full_name ?? "",
     specialty: doctor?.specialty ?? "",
     phone: doctor?.phone ?? "",
+    photo_url: doctor?.photo_url ?? "",
     salary_percentage: doctor?.salary_percentage ?? 30,
     active: doctor?.active ?? true,
   });
   const [saving, setSaving] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const fileRef = useRef<HTMLInputElement>(null);
 
   const save = async (e: React.FormEvent) => {
     e.preventDefault();

@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import { useAuth } from "@/hooks/use-auth";
 import { supabase } from "@/integrations/supabase/client";
+import { uploadAppImage } from "@/lib/image-upload";
 import { PageHeader } from "@/components/page-header";
 import { toast } from "sonner";
 import { Upload, Loader2, X } from "lucide-react";
@@ -39,30 +40,26 @@ function SettingsPage() {
 
   const onPickFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
+    e.target.value = "";
     if (!file || !clinic) return;
     if (!file.type.startsWith("image/")) {
       toast.error("Faqat rasm fayllarini yuklang");
       return;
     }
-    if (file.size > 3 * 1024 * 1024) {
-      toast.error("Rasm 3MB dan katta bo‘lmasligi kerak");
+    if (file.size > 50 * 1024 * 1024) {
+      toast.error("Rasm 50MB dan katta bo‘lmasligi kerak");
       return;
     }
     setUploading(true);
-    const ext = (file.name.split(".").pop() || "png").toLowerCase();
-    const path = `${clinic.id}/logo-${Date.now()}.${ext}`;
-    const { error: upErr } = await supabase.storage.from("logos").upload(path, file, {
-      upsert: true, contentType: file.type,
-    });
-    if (upErr) {
+    try {
+      const url = await uploadAppImage(file, clinic.id, { bucket: "logos", folder: "logos" });
+      setForm((f) => ({ ...f, logo_url: url }));
+      toast.success("Logotip yuklandi — saqlashni unutmang");
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Rasm yuklashda xatolik");
+    } finally {
       setUploading(false);
-      toast.error(upErr.message);
-      return;
     }
-    const { data: pub } = supabase.storage.from("logos").getPublicUrl(path);
-    setForm((f) => ({ ...f, logo_url: pub.publicUrl }));
-    setUploading(false);
-    toast.success("Logotip yuklandi — saqlashni unutmang");
   };
 
   const clearLogo = () => setForm((f) => ({ ...f, logo_url: "" }));

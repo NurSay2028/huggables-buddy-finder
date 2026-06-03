@@ -71,6 +71,31 @@ function PatientsPage() {
     void load();
   };
 
+  const exportExcel = () => {
+    if (!filtered.length) return toast.error("Eksport uchun bemor yo‘q");
+    exportToExcel(
+      filtered.map((p) => ({
+        "Ism": p.full_name,
+        "Telefon": p.phone,
+        "Tug‘ilgan sana": fmtDate(p.birth_date),
+        "Jinsi": p.gender === "male" ? "Erkak" : p.gender === "female" ? "Ayol" : "—",
+        "Manzil": p.address ?? "—",
+        "Allergiya": p.allergies ?? "—",
+        "Surunkali kasallik": p.medical_conditions ?? "—",
+        "Davolash turi": p.treatment_type ? TREATMENT_LABEL[p.treatment_type] : "—",
+        "Keyingi tashrif": fmtDate(p.next_visit_date),
+        "Eslatma holati": REMINDER_STATUS_LABEL[p.reminder_status],
+        "Qarz (so‘m)": Number(p.debt) || 0,
+        "Oxirgi tashrif": fmtDate(p.last_visit_at),
+        "Qo‘shilgan": fmtDate(p.created_at),
+        "Izoh": p.notes ?? "—",
+      })),
+      "bemorlar",
+      "Bemorlar",
+    );
+    toast.success("Excel yuklab olindi");
+  };
+
   return (
     <div className="px-4 py-6 sm:px-8 sm:py-8">
       <PageHeader

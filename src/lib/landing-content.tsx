@@ -67,6 +67,7 @@ export interface LandingContent {
     location: string;
     image: string;
     cta: string;
+    list: DoctorEntry[];
   };
   testimonials: {
     title: string;

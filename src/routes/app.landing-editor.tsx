@@ -40,8 +40,13 @@ function sanitizeForSave(content: LandingContent): LandingContent {
     const v = sec[field];
     if (typeof v !== "string" || !v.startsWith("http")) sec[field] = "";
   }
+  // doctor list images: keep only uploaded (http) urls so defaults can win
+  for (const d of clone.doctor.list) {
+    if (typeof d.image !== "string" || !d.image.startsWith("http")) d.image = "";
+  }
   return clone;
 }
+
 
 function LandingEditorPage() {
   const [content, setContent] = useState<LandingContent | null>(null);

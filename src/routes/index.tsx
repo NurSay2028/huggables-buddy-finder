@@ -9,6 +9,7 @@ import { FAQ } from "@/components/landing/FAQ";
 import { EmergencyCTA } from "@/components/landing/EmergencyCTA";
 import { Footer } from "@/components/landing/Footer";
 import { BookingDialog } from "@/components/landing/BookingDialog";
+import { AiSupport } from "@/components/landing/AiSupport";
 import { LandingContentProvider } from "@/lib/landing-content";
 
 export const Route = createFileRoute("/")({

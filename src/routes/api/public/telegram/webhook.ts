@@ -20,7 +20,11 @@ function normalizePhone(p: string): string {
 async function reply(chatId: number, text: string) {
   const lovableKey = process.env.LOVABLE_API_KEY;
   const tgKey = process.env.TELEGRAM_API_KEY;
-  if (!lovableKey || !tgKey) return;
+  if (!tgKey) return;
+  if (!lovableKey) {
+    await replyDirect(chatId, text, tgKey);
+    return;
+  }
   await fetch(`${GATEWAY_URL}/sendMessage`, {
     method: "POST",
     headers: {

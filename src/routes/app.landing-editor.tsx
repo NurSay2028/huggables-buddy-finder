@@ -25,13 +25,22 @@ const IMAGE_PATHS: [keyof LandingContent, string][] = [
 ];
 
 async function uploadImage(file: File, clinicId: string): Promise<string> {
-  const ext = (file.name.split(".").pop() || "jpg").toLowerCase();
-  const path = `${clinicId}/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
-  const { error } = await supabase.storage
-    .from("landing")
-    .upload(path, file, { upsert: true, contentType: file.type });
-  if (error) throw error;
-  return supabase.storage.from("landing").getPublicUrl(path).data.publicUrl;
+  const { data } = await supabase.auth.getSession();
+  const token = data.session?.access_token;
+  if (!token) throw new Error("Avval tizimga kiring");
+
+  const form = new FormData();
+  form.append("file", file);
+  form.append("clinicId", clinicId);
+
+  const response = await fetch("/api/landing-upload", {
+    method: "POST",
+    headers: { Authorization: `Bearer ${token}` },
+    body: form,
+  });
+  const payload = (await response.json().catch(() => ({}))) as { url?: string; error?: string };
+  if (!response.ok || !payload.url) throw new Error(payload.error ?? "Rasm yuklashda xatolik");
+  return payload.url;
 }
 
 function sanitizeForSave(content: LandingContent): LandingContent {

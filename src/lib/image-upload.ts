@@ -25,12 +25,28 @@ export async function uploadAppImage(
   form.append("bucket", options.bucket ?? "landing");
   form.append("folder", options.folder ?? "images");
 
-  const response = await fetch("/api/landing-upload", {
-    method: "POST",
-    headers: { Authorization: `Bearer ${token}` },
-    body: form,
-  });
-  const payload = (await response.json().catch(() => ({}))) as { url?: string; error?: string };
-  if (!response.ok || !payload.url) throw new Error(payload.error ?? "Rasm yuklashda xatolik");
+  let response: Response;
+  try {
+    response = await fetch("/api/landing-upload", {
+      method: "POST",
+      headers: { Authorization: `Bearer ${token}` },
+      body: form,
+    });
+  } catch {
+    throw new Error("Internetga ulanishda xatolik. Sahifani yangilab qayta urinib ko‘ring.");
+  }
+
+  const text = await response.text();
+  let payload: { url?: string; error?: string } = {};
+  try {
+    payload = text ? (JSON.parse(text) as { url?: string; error?: string }) : {};
+  } catch {
+    // server returned non-JSON (e.g. an error page) — surface status for clarity
+    throw new Error(`Server xatosi (${response.status}). Birozdan so‘ng qayta urinib ko‘ring.`);
+  }
+
+  if (!response.ok || !payload.url) {
+    throw new Error(payload.error ?? `Rasm yuklashda xatolik (${response.status})`);
+  }
   return payload.url;
 }

@@ -32,6 +32,14 @@ async function reply(chatId: number, text: string) {
   });
 }
 
+async function replyDirect(chatId: number, text: string, telegramToken: string) {
+  await fetch(`https://api.telegram.org/bot${telegramToken}/sendMessage`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ chat_id: chatId, text, parse_mode: "HTML" }),
+  });
+}
+
 export const Route = createFileRoute("/api/public/telegram/webhook")({
   server: {
     handlers: {

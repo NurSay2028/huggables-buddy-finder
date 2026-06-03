@@ -149,7 +149,7 @@ function DoctorForm({ doctor, clinicId, onClose, onSaved }: {
     e.preventDefault();
     if (!form.full_name.trim()) return toast.error("Ism majburiy");
     setSaving(true);
-    const payload = { ...form, specialty: form.specialty || null, phone: form.phone || null, clinic_id: clinicId };
+    const payload = { ...form, specialty: form.specialty || null, phone: form.phone || null, photo_url: form.photo_url || null, clinic_id: clinicId };
     const { error } = doctor
       ? await supabase.from("doctors").update(payload).eq("id", doctor.id)
       : await supabase.from("doctors").insert(payload);
@@ -159,9 +159,49 @@ function DoctorForm({ doctor, clinicId, onClose, onSaved }: {
     onSaved();
   };
 
+  const onPickFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    e.target.value = "";
+    if (!file) return;
+    setUploading(true);
+    try {
+      const url = await uploadAppImage(file, clinicId, { bucket: "landing", folder: "doctors" });
+      setForm((prev) => ({ ...prev, photo_url: url }));
+      toast.success("Rasm yuklandi");
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Rasm yuklashda xatolik");
+    } finally {
+      setUploading(false);
+    }
+  };
+
   return (
     <Modal open onClose={onClose} title={doctor ? "Shifokorni tahrirlash" : "Yangi shifokor"}>
       <form onSubmit={save} className="space-y-3">
+        <div>
+          <span className="mb-2 block text-xs font-medium text-muted-foreground">Shifokor rasmi</span>
+          <div className="flex items-center gap-3">
+            <div className="grid h-20 w-20 place-items-center overflow-hidden rounded-xl border border-border bg-muted">
+              {form.photo_url ? (
+                <img src={form.photo_url} alt="Shifokor rasmi" className="h-full w-full object-cover" />
+              ) : (
+                <UserCog className="h-6 w-6 text-muted-foreground" />
+              )}
+            </div>
+            <div className="flex flex-col gap-2">
+              <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={onPickFile} />
+              <button type="button" onClick={() => fileRef.current?.click()} disabled={uploading} className="btn-ghost">
+                {uploading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Upload className="h-4 w-4" />}
+                {uploading ? "Yuklanmoqda…" : "Rasm yuklash"}
+              </button>
+              {form.photo_url && (
+                <button type="button" onClick={() => setForm((prev) => ({ ...prev, photo_url: "" }))} className="inline-flex items-center gap-1 text-xs text-destructive hover:underline">
+                  <X className="h-3 w-3" /> O‘chirish
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
         <label className="block">
           <span className="mb-1 block text-xs font-medium text-muted-foreground">To‘liq ism *</span>
           <input className="input" value={form.full_name} onChange={(e) => setForm({ ...form, full_name: e.target.value })} required />

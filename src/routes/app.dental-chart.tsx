@@ -1,10 +1,11 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useAuth } from "@/hooks/use-auth";
 import { supabase } from "@/integrations/supabase/client";
+import { uploadAppImage } from "@/lib/image-upload";
 import { PageHeader, EmptyState, Modal } from "@/components/page-header";
 import { fmtDate, fmtSum } from "@/lib/format";
-import { Plus, Trash2 } from "lucide-react";
+import { ImagePlus, Loader2, Plus, Trash2, X } from "lucide-react";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/app/dental-chart")({
@@ -31,6 +32,8 @@ type DentalRec = {
   tooth_number: number;
   procedure: Procedure;
   notes: string | null;
+  before_image_url: string | null;
+  after_image_url: string | null;
   cost: number;
   created_at: string;
   doctors: { full_name: string } | null;

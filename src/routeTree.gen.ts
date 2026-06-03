@@ -27,6 +27,8 @@ import { Route as AppInventoryRouteImport } from './routes/app.inventory'
 import { Route as AppDoctorsRouteImport } from './routes/app.doctors'
 import { Route as AppDentalChartRouteImport } from './routes/app.dental-chart'
 import { Route as AppAppointmentsRouteImport } from './routes/app.appointments'
+import { Route as ApiPublicTelegramWebhookRouteImport } from './routes/api/public/telegram/webhook'
+import { Route as ApiPublicHooksSendRemindersRouteImport } from './routes/api/public/hooks/send-reminders'
 
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
@@ -118,6 +120,18 @@ const AppAppointmentsRoute = AppAppointmentsRouteImport.update({
   path: '/appointments',
   getParentRoute: () => AppRoute,
 } as any)
+const ApiPublicTelegramWebhookRoute =
+  ApiPublicTelegramWebhookRouteImport.update({
+    id: '/api/public/telegram/webhook',
+    path: '/api/public/telegram/webhook',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiPublicHooksSendRemindersRoute =
+  ApiPublicHooksSendRemindersRouteImport.update({
+    id: '/api/public/hooks/send-reminders',
+    path: '/api/public/hooks/send-reminders',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -138,6 +152,8 @@ export interface FileRoutesByFullPath {
   '/app/settings': typeof AppSettingsRoute
   '/app/staff': typeof AppStaffRoute
   '/app/': typeof AppIndexRoute
+  '/api/public/hooks/send-reminders': typeof ApiPublicHooksSendRemindersRoute
+  '/api/public/telegram/webhook': typeof ApiPublicTelegramWebhookRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -157,6 +173,8 @@ export interface FileRoutesByTo {
   '/app/settings': typeof AppSettingsRoute
   '/app/staff': typeof AppStaffRoute
   '/app': typeof AppIndexRoute
+  '/api/public/hooks/send-reminders': typeof ApiPublicHooksSendRemindersRoute
+  '/api/public/telegram/webhook': typeof ApiPublicTelegramWebhookRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -178,6 +196,8 @@ export interface FileRoutesById {
   '/app/settings': typeof AppSettingsRoute
   '/app/staff': typeof AppStaffRoute
   '/app/': typeof AppIndexRoute
+  '/api/public/hooks/send-reminders': typeof ApiPublicHooksSendRemindersRoute
+  '/api/public/telegram/webhook': typeof ApiPublicTelegramWebhookRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -200,6 +220,8 @@ export interface FileRouteTypes {
     | '/app/settings'
     | '/app/staff'
     | '/app/'
+    | '/api/public/hooks/send-reminders'
+    | '/api/public/telegram/webhook'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -219,6 +241,8 @@ export interface FileRouteTypes {
     | '/app/settings'
     | '/app/staff'
     | '/app'
+    | '/api/public/hooks/send-reminders'
+    | '/api/public/telegram/webhook'
   id:
     | '__root__'
     | '/'
@@ -239,6 +263,8 @@ export interface FileRouteTypes {
     | '/app/settings'
     | '/app/staff'
     | '/app/'
+    | '/api/public/hooks/send-reminders'
+    | '/api/public/telegram/webhook'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -246,6 +272,8 @@ export interface RootRouteChildren {
   AdminRoute: typeof AdminRoute
   AppRoute: typeof AppRouteWithChildren
   LoginRoute: typeof LoginRoute
+  ApiPublicHooksSendRemindersRoute: typeof ApiPublicHooksSendRemindersRoute
+  ApiPublicTelegramWebhookRoute: typeof ApiPublicTelegramWebhookRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -376,6 +404,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppAppointmentsRouteImport
       parentRoute: typeof AppRoute
     }
+    '/api/public/telegram/webhook': {
+      id: '/api/public/telegram/webhook'
+      path: '/api/public/telegram/webhook'
+      fullPath: '/api/public/telegram/webhook'
+      preLoaderRoute: typeof ApiPublicTelegramWebhookRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/hooks/send-reminders': {
+      id: '/api/public/hooks/send-reminders'
+      path: '/api/public/hooks/send-reminders'
+      fullPath: '/api/public/hooks/send-reminders'
+      preLoaderRoute: typeof ApiPublicHooksSendRemindersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -420,7 +462,19 @@ const rootRouteChildren: RootRouteChildren = {
   AdminRoute: AdminRoute,
   AppRoute: AppRouteWithChildren,
   LoginRoute: LoginRoute,
+  ApiPublicHooksSendRemindersRoute: ApiPublicHooksSendRemindersRoute,
+  ApiPublicTelegramWebhookRoute: ApiPublicTelegramWebhookRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}

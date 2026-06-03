@@ -20,9 +20,8 @@ function normalizePhone(p: string): string {
 async function reply(chatId: number, text: string) {
   const lovableKey = process.env.LOVABLE_API_KEY;
   const tgKey = process.env.TELEGRAM_API_KEY;
-  if (!tgKey) return;
-  if (!lovableKey) {
-    await replyDirect(chatId, text, tgKey);
+  if (!lovableKey || !tgKey) {
+    console.warn("Telegram not configured; cannot reply.");
     return;
   }
   await fetch(`${GATEWAY_URL}/sendMessage`, {
@@ -32,14 +31,6 @@ async function reply(chatId: number, text: string) {
       "X-Connection-Api-Key": tgKey,
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({ chat_id: chatId, text, parse_mode: "HTML" }),
-  });
-}
-
-async function replyDirect(chatId: number, text: string, telegramToken: string) {
-  await fetch(`https://api.telegram.org/bot${telegramToken}/sendMessage`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ chat_id: chatId, text, parse_mode: "HTML" }),
   });
 }

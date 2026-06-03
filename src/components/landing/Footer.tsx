@@ -1,4 +1,4 @@
-import { Phone, Mail, MapPin, Send } from "lucide-react";
+import { Phone, Mail, MapPin, Send, Instagram } from "lucide-react";
 import { useLanding } from "@/lib/landing-content";
 
 const links = [

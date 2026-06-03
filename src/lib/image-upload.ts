@@ -1,11 +1,27 @@
 import { supabase } from "@/integrations/supabase/client";
 
 const MAX_IMAGE_BYTES = 50 * 1024 * 1024;
+const ALLOWED_BUCKETS = new Set(["landing", "logos"]);
 
 type UploadOptions = {
   bucket?: "landing" | "logos";
   folder?: string;
 };
+
+function getExtension(file: File) {
+  const fromName = file.name.split(".").pop()?.toLowerCase().replace(/[^a-z0-9]/g, "");
+  if (fromName && ["jpg", "jpeg", "png", "webp", "gif", "avif"].includes(fromName)) return fromName;
+  if (file.type === "image/png") return "png";
+  if (file.type === "image/webp") return "webp";
+  if (file.type === "image/gif") return "gif";
+  if (file.type === "image/avif") return "avif";
+  return "jpg";
+}
+
+function safePathPart(value: string, fallback: string) {
+  const clean = value.toLowerCase().replace(/[^a-z0-9_-]/g, "-").replace(/-+/g, "-").slice(0, 40);
+  return clean || fallback;
+}
 
 export async function uploadAppImage(
   file: File,
@@ -14,39 +30,32 @@ export async function uploadAppImage(
 ): Promise<string> {
   if (!file.type.startsWith("image/")) throw new Error("Faqat rasm fayllari yuklanadi");
   if (file.size > MAX_IMAGE_BYTES) throw new Error("Rasm hajmi 50MB dan oshmasin");
+  if (!clinicId) throw new Error("Klinika topilmadi. Qayta kirib ko‘ring.");
 
   const { data } = await supabase.auth.getSession();
-  const token = data.session?.access_token;
-  if (!token) throw new Error("Avval tizimga kiring");
+  if (!data.session?.access_token) throw new Error("Avval tizimga kiring");
 
-  const form = new FormData();
-  form.append("file", file);
-  form.append("clinicId", clinicId);
-  form.append("bucket", options.bucket ?? "landing");
-  form.append("folder", options.folder ?? "images");
+  const bucket = options.bucket ?? "landing";
+  if (!ALLOWED_BUCKETS.has(bucket)) throw new Error("Rasm saqlanadigan joy noto‘g‘ri");
 
-  let response: Response;
-  try {
-    response = await fetch("/api/landing-upload", {
-      method: "POST",
-      headers: { Authorization: `Bearer ${token}` },
-      body: form,
-    });
-  } catch {
-    throw new Error("Internetga ulanishda xatolik. Sahifani yangilab qayta urinib ko‘ring.");
+  const folder = safePathPart(options.folder ?? "images", "images");
+  const ext = getExtension(file);
+  const path = `${clinicId}/${folder}/${Date.now()}-${crypto.randomUUID()}.${ext}`;
+
+  const { error } = await supabase.storage
+    .from(bucket)
+    .upload(path, file, { contentType: file.type, upsert: false });
+
+  if (error) {
+    const message = error.message.toLowerCase();
+    if (message.includes("row-level security") || message.includes("unauthorized")) {
+      throw new Error("Bu klinika uchun rasm yuklashga ruxsat yo‘q. Qayta kirib ko‘ring.");
+    }
+    if (message.includes("payload") || message.includes("too large") || message.includes("size")) {
+      throw new Error("Rasm hajmi 50MB dan oshmasin");
+    }
+    throw new Error("Rasm yuklanmadi. Boshqa rasm tanlab qayta urinib ko‘ring.");
   }
 
-  const text = await response.text();
-  let payload: { url?: string; error?: string } = {};
-  try {
-    payload = text ? (JSON.parse(text) as { url?: string; error?: string }) : {};
-  } catch {
-    // server returned non-JSON (e.g. an error page) — surface status for clarity
-    throw new Error(`Server xatosi (${response.status}). Birozdan so‘ng qayta urinib ko‘ring.`);
-  }
-
-  if (!response.ok || !payload.url) {
-    throw new Error(payload.error ?? `Rasm yuklashda xatolik (${response.status})`);
-  }
-  return payload.url;
+  return supabase.storage.from(bucket).getPublicUrl(path).data.publicUrl;
 }

@@ -1,9 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useAuth } from "@/hooks/use-auth";
 import { supabase } from "@/integrations/supabase/client";
+import { uploadAppImage } from "@/lib/image-upload";
 import { PageHeader, EmptyState, Modal } from "@/components/page-header";
-import { Plus, Pencil, Trash2, UserCog } from "lucide-react";
+import { Loader2, Plus, Pencil, Trash2, Upload, UserCog, X } from "lucide-react";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/app/doctors")({
@@ -15,6 +16,7 @@ type Doctor = {
   full_name: string;
   specialty: string | null;
   phone: string | null;
+  photo_url: string | null;
   salary_percentage: number;
   active: boolean;
 };
@@ -29,7 +31,7 @@ function DoctorsPage() {
     if (!clinic) return;
     const { data, error } = await supabase
       .from("doctors")
-      .select("id,full_name,specialty,phone,salary_percentage,active")
+      .select("id,full_name,specialty,phone,photo_url,salary_percentage,active")
       .eq("clinic_id", clinic.id)
       .order("created_at", { ascending: false });
     if (error) return toast.error(error.message);
@@ -80,8 +82,12 @@ function DoctorsPage() {
             <div key={d.id} className="card p-5">
               <div className="flex items-start justify-between">
                 <div className="flex items-center gap-3">
-                  <div className="grid h-10 w-10 place-items-center rounded-xl bg-primary-soft text-primary">
-                    <UserCog className="h-5 w-5" />
+                  <div className="grid h-12 w-12 place-items-center overflow-hidden rounded-xl bg-primary-soft text-primary">
+                    {d.photo_url ? (
+                      <img src={d.photo_url} alt={d.full_name} className="h-full w-full object-cover" />
+                    ) : (
+                      <UserCog className="h-5 w-5" />
+                    )}
                   </div>
                   <div>
                     <div className="font-semibold">{d.full_name}</div>
@@ -131,16 +137,19 @@ function DoctorForm({ doctor, clinicId, onClose, onSaved }: {
     full_name: doctor?.full_name ?? "",
     specialty: doctor?.specialty ?? "",
     phone: doctor?.phone ?? "",
+    photo_url: doctor?.photo_url ?? "",
     salary_percentage: doctor?.salary_percentage ?? 30,
     active: doctor?.active ?? true,
   });
   const [saving, setSaving] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const fileRef = useRef<HTMLInputElement>(null);
 
   const save = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!form.full_name.trim()) return toast.error("Ism majburiy");
     setSaving(true);
-    const payload = { ...form, specialty: form.specialty || null, phone: form.phone || null, clinic_id: clinicId };
+    const payload = { ...form, specialty: form.specialty || null, phone: form.phone || null, photo_url: form.photo_url || null, clinic_id: clinicId };
     const { error } = doctor
       ? await supabase.from("doctors").update(payload).eq("id", doctor.id)
       : await supabase.from("doctors").insert(payload);
@@ -150,9 +159,49 @@ function DoctorForm({ doctor, clinicId, onClose, onSaved }: {
     onSaved();
   };
 
+  const onPickFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    e.target.value = "";
+    if (!file) return;
+    setUploading(true);
+    try {
+      const url = await uploadAppImage(file, clinicId, { bucket: "landing", folder: "doctors" });
+      setForm((prev) => ({ ...prev, photo_url: url }));
+      toast.success("Rasm yuklandi");
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Rasm yuklashda xatolik");
+    } finally {
+      setUploading(false);
+    }
+  };
+
   return (
     <Modal open onClose={onClose} title={doctor ? "Shifokorni tahrirlash" : "Yangi shifokor"}>
       <form onSubmit={save} className="space-y-3">
+        <div>
+          <span className="mb-2 block text-xs font-medium text-muted-foreground">Shifokor rasmi</span>
+          <div className="flex items-center gap-3">
+            <div className="grid h-20 w-20 place-items-center overflow-hidden rounded-xl border border-border bg-muted">
+              {form.photo_url ? (
+                <img src={form.photo_url} alt="Shifokor rasmi" className="h-full w-full object-cover" />
+              ) : (
+                <UserCog className="h-6 w-6 text-muted-foreground" />
+              )}
+            </div>
+            <div className="flex flex-col gap-2">
+              <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={onPickFile} />
+              <button type="button" onClick={() => fileRef.current?.click()} disabled={uploading} className="btn-ghost">
+                {uploading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Upload className="h-4 w-4" />}
+                {uploading ? "Yuklanmoqda…" : "Rasm yuklash"}
+              </button>
+              {form.photo_url && (
+                <button type="button" onClick={() => setForm((prev) => ({ ...prev, photo_url: "" }))} className="inline-flex items-center gap-1 text-xs text-destructive hover:underline">
+                  <X className="h-3 w-3" /> O‘chirish
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
         <label className="block">
           <span className="mb-1 block text-xs font-medium text-muted-foreground">To‘liq ism *</span>
           <input className="input" value={form.full_name} onChange={(e) => setForm({ ...form, full_name: e.target.value })} required />

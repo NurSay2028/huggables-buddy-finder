@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { PageHeader } from "@/components/page-header";
 import { useAuth } from "@/hooks/use-auth";
+import { uploadAppImage } from "@/lib/image-upload";
 import {
   mergeContent,
   type LandingContent,
@@ -23,25 +24,6 @@ const IMAGE_PATHS: [keyof LandingContent, string][] = [
   ["doctor", "image"],
   ["faq", "image"],
 ];
-
-async function uploadImage(file: File, clinicId: string): Promise<string> {
-  const { data } = await supabase.auth.getSession();
-  const token = data.session?.access_token;
-  if (!token) throw new Error("Avval tizimga kiring");
-
-  const form = new FormData();
-  form.append("file", file);
-  form.append("clinicId", clinicId);
-
-  const response = await fetch("/api/landing-upload", {
-    method: "POST",
-    headers: { Authorization: `Bearer ${token}` },
-    body: form,
-  });
-  const payload = (await response.json().catch(() => ({}))) as { url?: string; error?: string };
-  if (!response.ok || !payload.url) throw new Error(payload.error ?? "Rasm yuklashda xatolik");
-  return payload.url;
-}
 
 function sanitizeForSave(content: LandingContent): LandingContent {
   const clone = JSON.parse(JSON.stringify(content)) as LandingContent;
@@ -355,13 +337,17 @@ function Img({
       toast.error("Faqat rasm fayllari");
       return;
     }
+    if (file.size > 50 * 1024 * 1024) {
+      toast.error("Rasm hajmi 50MB dan oshmasin");
+      return;
+    }
     if (!clinic) {
       toast.error("Klinika topilmadi. Qayta kirib ko‘ring.");
       return;
     }
     setUploading(true);
     try {
-      const url = await uploadImage(file, clinic.id);
+      const url = await uploadAppImage(file, clinic.id, { bucket: "landing", folder: "landing" });
       onChange(url);
       toast.success("Rasm yuklandi");
     } catch (err) {

@@ -237,6 +237,7 @@ export type Database = {
           full_name: string
           id: string
           phone: string | null
+          photo_url: string | null
           salary_percentage: number
           schedule: Json | null
           specialty: string | null
@@ -249,6 +250,7 @@ export type Database = {
           full_name: string
           id?: string
           phone?: string | null
+          photo_url?: string | null
           salary_percentage?: number
           schedule?: Json | null
           specialty?: string | null
@@ -261,6 +263,7 @@ export type Database = {
           full_name?: string
           id?: string
           phone?: string | null
+          photo_url?: string | null
           salary_percentage?: number
           schedule?: Json | null
           specialty?: string | null

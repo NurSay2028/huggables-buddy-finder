@@ -1,10 +1,11 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState, type ChangeEvent, type RefObject } from "react";
 import { useAuth } from "@/hooks/use-auth";
 import { supabase } from "@/integrations/supabase/client";
+import { uploadAppImage } from "@/lib/image-upload";
 import { PageHeader, EmptyState, Modal } from "@/components/page-header";
 import { fmtDate, fmtSum } from "@/lib/format";
-import { Plus, Trash2 } from "lucide-react";
+import { ImagePlus, Loader2, Plus, Trash2, X } from "lucide-react";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/app/dental-chart")({
@@ -31,6 +32,8 @@ type DentalRec = {
   tooth_number: number;
   procedure: Procedure;
   notes: string | null;
+  before_image_url: string | null;
+  after_image_url: string | null;
   cost: number;
   created_at: string;
   doctors: { full_name: string } | null;
@@ -119,6 +122,12 @@ function ChartPage() {
                       <div className="font-medium">{PROC_LABEL[r.procedure]}</div>
                       <div className="text-xs text-muted-foreground">{r.doctors?.full_name ?? "—"} • {fmtDate(r.created_at)}</div>
                       {r.notes && <div className="mt-1 text-xs text-muted-foreground">{r.notes}</div>}
+                      {(r.before_image_url || r.after_image_url) && (
+                        <div className="mt-3 flex gap-2">
+                          {r.before_image_url && <RecordImage src={r.before_image_url} label="Oldin" />}
+                          {r.after_image_url && <RecordImage src={r.after_image_url} label="Keyin" />}
+                        </div>
+                      )}
                     </div>
                     <div className="font-medium">{fmtSum(r.cost)}</div>
                     <button onClick={() => remove(r.id)} className="rounded-md p-1.5 text-destructive hover:bg-destructive/10"><Trash2 className="h-4 w-4" /></button>
@@ -156,6 +165,15 @@ function ToothBtn({ num, proc, onClick }: { num: number; proc?: Procedure; onCli
   );
 }
 
+function RecordImage({ src, label }: { src: string; label: string }) {
+  return (
+    <a href={src} target="_blank" rel="noreferrer" className="group relative block h-16 w-16 overflow-hidden rounded-lg border border-border bg-muted">
+      <img src={src} alt={label} className="h-full w-full object-cover transition group-hover:scale-105" />
+      <span className="absolute bottom-0 left-0 right-0 bg-background/80 py-0.5 text-center text-[10px] font-medium">{label}</span>
+    </a>
+  );
+}
+
 function ProcForm({ tooth, patientId, clinicId, doctors, onClose, onSaved }: {
   tooth: number; patientId: string; clinicId: string;
   doctors: { id: string; full_name: string }[];
@@ -166,8 +184,31 @@ function ProcForm({ tooth, patientId, clinicId, doctors, onClose, onSaved }: {
     doctor_id: "",
     cost: 0,
     notes: "",
+    before_image_url: "",
+    after_image_url: "",
   });
   const [saving, setSaving] = useState(false);
+  const [uploading, setUploading] = useState<"before" | "after" | null>(null);
+  const beforeRef = useRef<HTMLInputElement>(null);
+  const afterRef = useRef<HTMLInputElement>(null);
+
+  const onPickImage = async (e: React.ChangeEvent<HTMLInputElement>, field: "before_image_url" | "after_image_url") => {
+    const file = e.target.files?.[0];
+    e.target.value = "";
+    if (!file) return;
+    const kind = field === "before_image_url" ? "before" : "after";
+    setUploading(kind);
+    try {
+      const url = await uploadAppImage(file, clinicId, { bucket: "landing", folder: "dental" });
+      setForm((prev) => ({ ...prev, [field]: url }));
+      toast.success("Rasm yuklandi");
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Rasm yuklashda xatolik");
+    } finally {
+      setUploading(null);
+    }
+  };
+
   const save = async (e: React.FormEvent) => {
     e.preventDefault();
     setSaving(true);
@@ -179,6 +220,8 @@ function ProcForm({ tooth, patientId, clinicId, doctors, onClose, onSaved }: {
       doctor_id: form.doctor_id || null,
       cost: form.cost,
       notes: form.notes || null,
+      before_image_url: form.before_image_url || null,
+      after_image_url: form.after_image_url || null,
     });
     setSaving(false);
     if (error) return toast.error(error.message);
@@ -209,11 +252,72 @@ function ProcForm({ tooth, patientId, clinicId, doctors, onClose, onSaved }: {
           <span className="mb-1 block text-xs font-medium text-muted-foreground">Izoh</span>
           <textarea rows={2} className="input" value={form.notes} onChange={(e) => setForm({ ...form, notes: e.target.value })} />
         </label>
+        <div className="grid gap-3 sm:grid-cols-2">
+          <ImageUploadBox
+            label="Oldingi rasm"
+            value={form.before_image_url}
+            loading={uploading === "before"}
+            inputRef={beforeRef}
+            onPick={(e) => onPickImage(e, "before_image_url")}
+            onClear={() => setForm((prev) => ({ ...prev, before_image_url: "" }))}
+          />
+          <ImageUploadBox
+            label="Keyingi rasm"
+            value={form.after_image_url}
+            loading={uploading === "after"}
+            inputRef={afterRef}
+            onPick={(e) => onPickImage(e, "after_image_url")}
+            onClear={() => setForm((prev) => ({ ...prev, after_image_url: "" }))}
+          />
+        </div>
         <div className="flex justify-end gap-2 pt-2">
           <button type="button" onClick={onClose} className="btn-ghost">Bekor qilish</button>
           <button type="submit" disabled={saving} className="btn-primary">{saving ? "…" : "Saqlash"}</button>
         </div>
       </form>
     </Modal>
+  );
+}
+
+function ImageUploadBox({
+  label,
+  value,
+  loading,
+  inputRef,
+  onPick,
+  onClear,
+}: {
+  label: string;
+  value: string;
+  loading: boolean;
+  inputRef: RefObject<HTMLInputElement | null>;
+  onPick: (e: ChangeEvent<HTMLInputElement>) => void;
+  onClear: () => void;
+}) {
+  return (
+    <div>
+      <span className="mb-1 block text-xs font-medium text-muted-foreground">{label}</span>
+      <div className="flex items-center gap-3">
+        <div className="grid h-20 w-20 place-items-center overflow-hidden rounded-xl border border-border bg-muted">
+          {value ? (
+            <img src={value} alt={label} className="h-full w-full object-cover" />
+          ) : (
+            <ImagePlus className="h-5 w-5 text-muted-foreground" />
+          )}
+        </div>
+        <div className="flex flex-col gap-2">
+          <input ref={inputRef} type="file" accept="image/*" className="hidden" onChange={onPick} />
+          <button type="button" onClick={() => inputRef.current?.click()} disabled={loading} className="btn-ghost">
+            {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <ImagePlus className="h-4 w-4" />}
+            {loading ? "Yuklanmoqda…" : "Yuklash"}
+          </button>
+          {value && (
+            <button type="button" onClick={onClear} className="inline-flex items-center gap-1 text-xs text-destructive hover:underline">
+              <X className="h-3 w-3" /> O‘chirish
+            </button>
+          )}
+        </div>
+      </div>
+    </div>
   );
 }

@@ -236,9 +236,10 @@ function StatusBadge({ status }: { status: ReminderStatus }) {
 }
 
 function ReminderModal({
-  row, clinicName, templates, botUsername, onClose, onMark,
+  row, clinicId, clinicName, templates, botUsername, onClose, onMark,
 }: {
   row: Row;
+  clinicId: string;
   clinicName: string;
   templates: Template[];
   botUsername: string | null;
@@ -247,6 +248,8 @@ function ReminderModal({
 }) {
   const send = useServerFn(sendPatientReminder);
   const [sending, setSending] = useState(false);
+  const [scheduleAt, setScheduleAt] = useState("");
+  const [scheduling, setScheduling] = useState(false);
 
   const vars = useMemo(() => ({
     name: row.full_name,

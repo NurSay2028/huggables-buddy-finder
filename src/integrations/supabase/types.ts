@@ -124,6 +124,7 @@ export type Database = {
           doctors_count: number
           id: string
           logo_url: string | null
+          manages_landing: boolean
           name: string
           owner_name: string
           phone: string
@@ -138,6 +139,7 @@ export type Database = {
           doctors_count?: number
           id?: string
           logo_url?: string | null
+          manages_landing?: boolean
           name: string
           owner_name: string
           phone: string
@@ -152,6 +154,7 @@ export type Database = {
           doctors_count?: number
           id?: string
           logo_url?: string | null
+          manages_landing?: boolean
           name?: string
           owner_name?: string
           phone?: string
@@ -683,13 +686,22 @@ export type Database = {
       }
       can_manage_landing: { Args: { _user_id: string }; Returns: boolean }
       gen_patient_telegram_code: { Args: never; Returns: string }
-      has_role: {
-        Args: {
-          _role: Database["public"]["Enums"]["app_role"]
-          _user_id: string
-        }
-        Returns: boolean
-      }
+      has_role:
+        | {
+            Args: {
+              _role: Database["public"]["Enums"]["app_role"]
+              _user_id: string
+            }
+            Returns: boolean
+          }
+        | {
+            Args: {
+              _clinic_id: string
+              _role: Database["public"]["Enums"]["app_role"]
+              _user_id: string
+            }
+            Returns: boolean
+          }
       is_clinic_member: { Args: { _user_id: string }; Returns: boolean }
       is_super_admin: { Args: { _user_id: string }; Returns: boolean }
       user_clinic_id: { Args: { _user_id: string }; Returns: string }

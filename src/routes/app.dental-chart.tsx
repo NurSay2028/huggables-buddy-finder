@@ -23,9 +23,9 @@ const PROC_COLOR: { [K in Procedure]: string } = {
   whitening: "bg-accent", braces: "bg-chart-4/40",
 };
 
-// FDI-like layout (4 quadrants × 8 teeth)
-const UPPER = [18, 17, 16, 15, 14, 13, 12, 11, 21, 22, 23, 24, 25, 26, 27, 28];
-const LOWER = [48, 47, 46, 45, 44, 43, 42, 41, 31, 32, 33, 34, 35, 36, 37, 38];
+// 32 teeth, simple 1–32 numbering (upper 1–16, lower 17–32)
+const UPPER = Array.from({ length: 16 }, (_, i) => i + 1);
+const LOWER = Array.from({ length: 16 }, (_, i) => i + 17);
 
 type DentalRec = {
   id: string;
@@ -90,13 +90,13 @@ function ChartPage() {
         <div className="card"><EmptyState title="Bemor tanlanmagan" description="Tish kartasini ko‘rish uchun yuqoridan bemorni tanlang." /></div>
       ) : (
         <>
-          <div className="card mb-6 p-6">
+          <div className="card mb-6 p-4 sm:p-6">
             <div className="mb-3 text-xs uppercase tracking-wider text-muted-foreground">Yuqori jag‘</div>
-            <div className="grid grid-flow-col auto-cols-fr gap-1">
+            <div className="grid grid-cols-8 gap-1.5 sm:grid-cols-[repeat(16,minmax(0,1fr))]">
               {UPPER.map((n) => <ToothBtn key={n} num={n} proc={latestByTooth.get(n)} onClick={() => setTooth(n)} />)}
             </div>
             <div className="mt-6 mb-3 text-xs uppercase tracking-wider text-muted-foreground">Pastki jag‘</div>
-            <div className="grid grid-flow-col auto-cols-fr gap-1">
+            <div className="grid grid-cols-8 gap-1.5 sm:grid-cols-[repeat(16,minmax(0,1fr))]">
               {LOWER.map((n) => <ToothBtn key={n} num={n} proc={latestByTooth.get(n)} onClick={() => setTooth(n)} />)}
             </div>
 
@@ -116,9 +116,9 @@ function ChartPage() {
             ) : (
               <div className="divide-y divide-border">
                 {records.map((r) => (
-                  <div key={r.id} className="flex items-center gap-4 p-4">
-                    <div className="grid h-10 w-10 place-items-center rounded-lg bg-muted text-sm font-semibold">{r.tooth_number}</div>
-                    <div className="flex-1">
+                  <div key={r.id} className="flex items-center gap-3 p-4">
+                    <div className="grid h-10 w-10 shrink-0 place-items-center rounded-lg bg-muted text-sm font-semibold">{r.tooth_number}</div>
+                    <div className="min-w-0 flex-1">
                       <div className="font-medium">{PROC_LABEL[r.procedure]}</div>
                       <div className="text-xs text-muted-foreground">{r.doctors?.full_name ?? "—"} • {fmtDate(r.created_at)}</div>
                       {r.notes && <div className="mt-1 text-xs text-muted-foreground">{r.notes}</div>}
@@ -129,8 +129,8 @@ function ChartPage() {
                         </div>
                       )}
                     </div>
-                    <div className="font-medium">{fmtSum(r.cost)}</div>
-                    <button onClick={() => remove(r.id)} className="rounded-md p-1.5 text-destructive hover:bg-destructive/10"><Trash2 className="h-4 w-4" /></button>
+                    <div className="shrink-0 whitespace-nowrap text-right text-sm font-semibold">{fmtSum(r.cost)}</div>
+                    <button onClick={() => remove(r.id)} className="shrink-0 rounded-md p-1.5 text-destructive hover:bg-destructive/10"><Trash2 className="h-4 w-4" /></button>
                   </div>
                 ))}
               </div>
@@ -157,7 +157,7 @@ function ToothBtn({ num, proc, onClick }: { num: number; proc?: Procedure; onCli
   return (
     <button
       onClick={onClick}
-      className={`aspect-[3/4] rounded-md border border-border text-[10px] font-medium transition hover:scale-105 ${proc ? PROC_COLOR[proc] : "bg-card"}`}
+      className={`grid aspect-square place-items-center rounded-md border border-border text-xs font-semibold transition active:scale-95 sm:hover:scale-105 ${proc ? PROC_COLOR[proc] : "bg-card"}`}
       title={proc ? PROC_LABEL[proc] : "Sog‘lom"}
     >
       {num}

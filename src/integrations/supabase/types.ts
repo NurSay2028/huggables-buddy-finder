@@ -711,6 +711,10 @@ export type Database = {
       }
       is_clinic_member: { Args: { _user_id: string }; Returns: boolean }
       is_super_admin: { Args: { _user_id: string }; Returns: boolean }
+      shares_clinic: {
+        Args: { _target: string; _viewer: string }
+        Returns: boolean
+      }
       user_clinic_id: { Args: { _user_id: string }; Returns: string }
     }
     Enums: {

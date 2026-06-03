@@ -211,10 +211,18 @@ export function mergeContent(stored: unknown): LandingContent {
 
 const LandingContentContext = createContext<LandingContent>(DEFAULT_CONTENT);
 
-export function LandingContentProvider({ children }: { children: ReactNode }) {
-  const [content, setContent] = useState<LandingContent>(DEFAULT_CONTENT);
+export function LandingContentProvider({
+  children,
+  initial,
+}: {
+  children: ReactNode;
+  /** Server-loaded content (avoids the default-content flash on first paint). */
+  initial?: LandingContent | null;
+}) {
+  const [content, setContent] = useState<LandingContent>(initial ?? DEFAULT_CONTENT);
 
   useEffect(() => {
+    if (initial) return; // already have server content, no need to refetch
     let active = true;
     (async () => {
       const { data } = await supabase
@@ -227,7 +235,7 @@ export function LandingContentProvider({ children }: { children: ReactNode }) {
     return () => {
       active = false;
     };
-  }, []);
+  }, [initial]);
 
   return (
     <LandingContentContext.Provider value={content}>

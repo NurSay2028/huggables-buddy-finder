@@ -184,8 +184,31 @@ function ProcForm({ tooth, patientId, clinicId, doctors, onClose, onSaved }: {
     doctor_id: "",
     cost: 0,
     notes: "",
+    before_image_url: "",
+    after_image_url: "",
   });
   const [saving, setSaving] = useState(false);
+  const [uploading, setUploading] = useState<"before" | "after" | null>(null);
+  const beforeRef = useRef<HTMLInputElement>(null);
+  const afterRef = useRef<HTMLInputElement>(null);
+
+  const onPickImage = async (e: React.ChangeEvent<HTMLInputElement>, field: "before_image_url" | "after_image_url") => {
+    const file = e.target.files?.[0];
+    e.target.value = "";
+    if (!file) return;
+    const kind = field === "before_image_url" ? "before" : "after";
+    setUploading(kind);
+    try {
+      const url = await uploadAppImage(file, clinicId, { bucket: "landing", folder: "dental" });
+      setForm((prev) => ({ ...prev, [field]: url }));
+      toast.success("Rasm yuklandi");
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Rasm yuklashda xatolik");
+    } finally {
+      setUploading(null);
+    }
+  };
+
   const save = async (e: React.FormEvent) => {
     e.preventDefault();
     setSaving(true);
@@ -197,6 +220,8 @@ function ProcForm({ tooth, patientId, clinicId, doctors, onClose, onSaved }: {
       doctor_id: form.doctor_id || null,
       cost: form.cost,
       notes: form.notes || null,
+      before_image_url: form.before_image_url || null,
+      after_image_url: form.after_image_url || null,
     });
     setSaving(false);
     if (error) return toast.error(error.message);

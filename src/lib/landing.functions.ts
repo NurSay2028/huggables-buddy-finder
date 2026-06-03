@@ -1,10 +1,8 @@
 import { createServerFn } from "@tanstack/react-start";
 
-type LandingJson = Record<string, unknown> | null;
-
-/** Public: returns the stored landing content (server-side, no flash). */
+/** Public: returns the stored landing content as a JSON string (server-side, no flash). */
 export const getLandingContent = createServerFn({ method: "GET" }).handler(
-  async (): Promise<{ content: LandingJson }> => {
+  async (): Promise<{ json: string | null }> => {
     try {
       const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
       const { data } = await supabaseAdmin
@@ -12,9 +10,9 @@ export const getLandingContent = createServerFn({ method: "GET" }).handler(
         .select("content")
         .eq("id", 1)
         .maybeSingle();
-      return { content: (data?.content ?? null) as LandingJson };
+      return { json: data?.content ? JSON.stringify(data.content) : null };
     } catch {
-      return { content: null };
+      return { json: null };
     }
   },
 );

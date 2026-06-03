@@ -10,9 +10,14 @@ import { EmergencyCTA } from "@/components/landing/EmergencyCTA";
 import { Footer } from "@/components/landing/Footer";
 import { BookingDialog } from "@/components/landing/BookingDialog";
 import { AiSupport } from "@/components/landing/AiSupport";
-import { LandingContentProvider } from "@/lib/landing-content";
+import { LandingContentProvider, mergeContent, type LandingContent } from "@/lib/landing-content";
+import { getLandingContent } from "@/lib/landing.functions";
 
 export const Route = createFileRoute("/")({
+  loader: async () => {
+    const { json } = await getLandingContent();
+    return { contentJson: json };
+  },
   head: () => ({
     meta: [
       { title: "Djoni Dentist — Nukusdagi stomatologiya | 24/7" },

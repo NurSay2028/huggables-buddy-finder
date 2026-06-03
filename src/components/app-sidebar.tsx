@@ -36,6 +36,7 @@ const items: NavItem[] = [
   { label: "Tish kartasi", to: "/app/dental-chart", icon: Stethoscope },
   { label: "Shifokorlar", to: "/app/doctors", icon: UserCog },
   { label: "To‘lovlar", to: "/app/payments", icon: Wallet },
+  { label: "Xarajatlar", to: "/app/expenses", icon: TrendingDown },
   { label: "Ombor", to: "/app/inventory", icon: Boxes },
   { label: "Hisobotlar", to: "/app/reports", icon: BarChart3 },
   { label: "Eslatmalar", to: "/app/reminders", icon: BellRing },

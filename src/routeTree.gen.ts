@@ -24,6 +24,7 @@ import { Route as AppNotificationsRouteImport } from './routes/app.notifications
 import { Route as AppLeadsRouteImport } from './routes/app.leads'
 import { Route as AppLandingEditorRouteImport } from './routes/app.landing-editor'
 import { Route as AppInventoryRouteImport } from './routes/app.inventory'
+import { Route as AppExpensesRouteImport } from './routes/app.expenses'
 import { Route as AppDoctorsRouteImport } from './routes/app.doctors'
 import { Route as AppDentalChartRouteImport } from './routes/app.dental-chart'
 import { Route as AppAppointmentsRouteImport } from './routes/app.appointments'
@@ -106,6 +107,11 @@ const AppInventoryRoute = AppInventoryRouteImport.update({
   path: '/inventory',
   getParentRoute: () => AppRoute,
 } as any)
+const AppExpensesRoute = AppExpensesRouteImport.update({
+  id: '/expenses',
+  path: '/expenses',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppDoctorsRoute = AppDoctorsRouteImport.update({
   id: '/doctors',
   path: '/doctors',
@@ -148,6 +154,7 @@ export interface FileRoutesByFullPath {
   '/app/appointments': typeof AppAppointmentsRoute
   '/app/dental-chart': typeof AppDentalChartRoute
   '/app/doctors': typeof AppDoctorsRoute
+  '/app/expenses': typeof AppExpensesRoute
   '/app/inventory': typeof AppInventoryRoute
   '/app/landing-editor': typeof AppLandingEditorRoute
   '/app/leads': typeof AppLeadsRoute
@@ -170,6 +177,7 @@ export interface FileRoutesByTo {
   '/app/appointments': typeof AppAppointmentsRoute
   '/app/dental-chart': typeof AppDentalChartRoute
   '/app/doctors': typeof AppDoctorsRoute
+  '/app/expenses': typeof AppExpensesRoute
   '/app/inventory': typeof AppInventoryRoute
   '/app/landing-editor': typeof AppLandingEditorRoute
   '/app/leads': typeof AppLeadsRoute
@@ -194,6 +202,7 @@ export interface FileRoutesById {
   '/app/appointments': typeof AppAppointmentsRoute
   '/app/dental-chart': typeof AppDentalChartRoute
   '/app/doctors': typeof AppDoctorsRoute
+  '/app/expenses': typeof AppExpensesRoute
   '/app/inventory': typeof AppInventoryRoute
   '/app/landing-editor': typeof AppLandingEditorRoute
   '/app/leads': typeof AppLeadsRoute
@@ -219,6 +228,7 @@ export interface FileRouteTypes {
     | '/app/appointments'
     | '/app/dental-chart'
     | '/app/doctors'
+    | '/app/expenses'
     | '/app/inventory'
     | '/app/landing-editor'
     | '/app/leads'
@@ -241,6 +251,7 @@ export interface FileRouteTypes {
     | '/app/appointments'
     | '/app/dental-chart'
     | '/app/doctors'
+    | '/app/expenses'
     | '/app/inventory'
     | '/app/landing-editor'
     | '/app/leads'
@@ -264,6 +275,7 @@ export interface FileRouteTypes {
     | '/app/appointments'
     | '/app/dental-chart'
     | '/app/doctors'
+    | '/app/expenses'
     | '/app/inventory'
     | '/app/landing-editor'
     | '/app/leads'
@@ -397,6 +409,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppInventoryRouteImport
       parentRoute: typeof AppRoute
     }
+    '/app/expenses': {
+      id: '/app/expenses'
+      path: '/expenses'
+      fullPath: '/app/expenses'
+      preLoaderRoute: typeof AppExpensesRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/app/doctors': {
       id: '/app/doctors'
       path: '/doctors'
@@ -446,6 +465,7 @@ interface AppRouteChildren {
   AppAppointmentsRoute: typeof AppAppointmentsRoute
   AppDentalChartRoute: typeof AppDentalChartRoute
   AppDoctorsRoute: typeof AppDoctorsRoute
+  AppExpensesRoute: typeof AppExpensesRoute
   AppInventoryRoute: typeof AppInventoryRoute
   AppLandingEditorRoute: typeof AppLandingEditorRoute
   AppLeadsRoute: typeof AppLeadsRoute
@@ -463,6 +483,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppAppointmentsRoute: AppAppointmentsRoute,
   AppDentalChartRoute: AppDentalChartRoute,
   AppDoctorsRoute: AppDoctorsRoute,
+  AppExpensesRoute: AppExpensesRoute,
   AppInventoryRoute: AppInventoryRoute,
   AppLandingEditorRoute: AppLandingEditorRoute,
   AppLeadsRoute: AppLeadsRoute,

@@ -285,6 +285,26 @@ function ReminderModal({
     } finally { setSending(false); }
   };
 
+  const schedule = async () => {
+    if (!scheduleAt) return toast.error("Vaqtni tanlang");
+    const sendAt = new Date(scheduleAt);
+    if (isNaN(sendAt.getTime())) return toast.error("Noto‘g‘ri vaqt");
+    if (sendAt.getTime() < Date.now()) return toast.error("Vaqt o‘tib ketgan");
+    if (!row.telegram_chat_id) return toast.error("Bemor Telegram hisobini ulamagan.");
+    setScheduling(true);
+    const { error } = await supabase.from("scheduled_reminders").insert({
+      clinic_id: clinicId,
+      patient_id: row.id,
+      message: text,
+      send_at: sendAt.toISOString(),
+      status: "pending",
+    });
+    setScheduling(false);
+    if (error) return toast.error(error.message);
+    toast.success(`Rejalashtirildi: ${fmtDateTime(sendAt)} ✅`);
+    onMark("contacted");
+  };
+
   const botLink = botUsername ? `https://t.me/${botUsername}` : null;
 
   return (

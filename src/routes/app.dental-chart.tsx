@@ -23,9 +23,9 @@ const PROC_COLOR: { [K in Procedure]: string } = {
   whitening: "bg-accent", braces: "bg-chart-4/40",
 };
 
-// FDI-like layout (4 quadrants × 8 teeth)
-const UPPER = [18, 17, 16, 15, 14, 13, 12, 11, 21, 22, 23, 24, 25, 26, 27, 28];
-const LOWER = [48, 47, 46, 45, 44, 43, 42, 41, 31, 32, 33, 34, 35, 36, 37, 38];
+// 32 teeth, simple 1–32 numbering (upper 1–16, lower 17–32)
+const UPPER = Array.from({ length: 16 }, (_, i) => i + 1);
+const LOWER = Array.from({ length: 16 }, (_, i) => i + 17);
 
 type DentalRec = {
   id: string;

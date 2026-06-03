@@ -51,7 +51,7 @@ function Dashboard() {
       const todayEnd = new Date(); todayEnd.setHours(23, 59, 59, 999);
       const sixMonthsAgo = new Date(); sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 7); sixMonthsAgo.setDate(1);
 
-      const [appts, payToday, patients, debt, paySix, appts6, doctors, todayList, recentP, reminders, aiReqs] = await Promise.all([
+      const [appts, payToday, patients, debt, paySix, expSix, appts6, doctors, todayList, recentP, reminders, aiReqs] = await Promise.all([
         supabase.from("appointments").select("id", { count: "exact", head: true })
           .eq("clinic_id", cid).gte("starts_at", todayStart.toISOString()).lte("starts_at", todayEnd.toISOString()),
         supabase.from("payments").select("amount").eq("clinic_id", cid)
@@ -60,6 +60,8 @@ function Dashboard() {
         supabase.from("patients").select("debt").eq("clinic_id", cid),
         supabase.from("payments").select("amount,created_at,doctor_id:appointment_id")
           .eq("clinic_id", cid).gte("created_at", sixMonthsAgo.toISOString()),
+        supabase.from("expenses").select("amount,spent_at")
+          .eq("clinic_id", cid).gte("spent_at", sixMonthsAgo.toISOString().slice(0, 10)),
         supabase.from("appointments").select("id,doctor_id,starts_at").eq("clinic_id", cid)
           .gte("starts_at", sixMonthsAgo.toISOString()),
         supabase.from("doctors").select("id,full_name,specialty").eq("clinic_id", cid),

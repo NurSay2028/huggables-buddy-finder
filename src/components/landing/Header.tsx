@@ -47,7 +47,7 @@ export function Header() {
           className="hidden items-center gap-2 rounded-full bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground shadow-card transition-transform hover:scale-105 lg:inline-flex"
         >
           <Phone className="h-4 w-4" />
-          Bog'lanish
+          Baylanıs
         </a>
 
         <button

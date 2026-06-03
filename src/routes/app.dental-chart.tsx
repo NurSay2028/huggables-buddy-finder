@@ -90,13 +90,13 @@ function ChartPage() {
         <div className="card"><EmptyState title="Bemor tanlanmagan" description="Tish kartasini ko‘rish uchun yuqoridan bemorni tanlang." /></div>
       ) : (
         <>
-          <div className="card mb-6 p-6">
+          <div className="card mb-6 p-4 sm:p-6">
             <div className="mb-3 text-xs uppercase tracking-wider text-muted-foreground">Yuqori jag‘</div>
-            <div className="grid grid-flow-col auto-cols-fr gap-1">
+            <div className="grid grid-cols-8 gap-1.5 sm:grid-cols-[repeat(16,minmax(0,1fr))]">
               {UPPER.map((n) => <ToothBtn key={n} num={n} proc={latestByTooth.get(n)} onClick={() => setTooth(n)} />)}
             </div>
             <div className="mt-6 mb-3 text-xs uppercase tracking-wider text-muted-foreground">Pastki jag‘</div>
-            <div className="grid grid-flow-col auto-cols-fr gap-1">
+            <div className="grid grid-cols-8 gap-1.5 sm:grid-cols-[repeat(16,minmax(0,1fr))]">
               {LOWER.map((n) => <ToothBtn key={n} num={n} proc={latestByTooth.get(n)} onClick={() => setTooth(n)} />)}
             </div>
 

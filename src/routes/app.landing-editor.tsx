@@ -319,18 +319,21 @@ function Img({
   label,
   value,
   onChange,
+  aspect = 4 / 3,
 }: {
   label: string;
   value: string;
   onChange: (v: string) => void;
+  aspect?: number;
 }) {
   const { clinic } = useAuth();
   const inputRef = useRef<HTMLInputElement>(null);
   const [uploading, setUploading] = useState(false);
+  const [cropFile, setCropFile] = useState<File | null>(null);
 
   const pick = () => inputRef.current?.click();
 
-  const onFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const onFile = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     e.target.value = "";
     if (!file) return;
@@ -346,6 +349,12 @@ function Img({
       toast.error("Klinika topilmadi. Qayta kirib ko‘ring.");
       return;
     }
+    setCropFile(file);
+  };
+
+  const onCropped = async (file: File) => {
+    setCropFile(null);
+    if (!clinic) return;
     setUploading(true);
     try {
       const url = await uploadAppImage(file, clinic.id, { bucket: "landing", folder: "landing" });

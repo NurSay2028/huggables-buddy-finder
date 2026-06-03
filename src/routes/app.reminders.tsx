@@ -370,6 +370,33 @@ function ReminderModal({
           <a href={`tel:${row.phone}`} className="btn-ghost"><Phone className="h-4 w-4" /> Qo‘ng‘iroq</a>
         </div>
 
+        <div className="rounded-lg border border-border bg-muted/30 p-3">
+          <div className="mb-2 flex items-center gap-2 text-xs font-medium text-muted-foreground">
+            <Clock className="h-3.5 w-3.5" /> Belgilangan vaqtda yuborish (Telegram)
+          </div>
+          <div className="flex flex-wrap items-end gap-2">
+            <input
+              type="datetime-local"
+              className="input max-w-xs"
+              min={toLocalInput(new Date())}
+              value={scheduleAt}
+              onChange={(e) => setScheduleAt(e.target.value)}
+            />
+            <button
+              onClick={schedule}
+              disabled={scheduling || !row.telegram_chat_id || !scheduleAt}
+              className="btn-primary disabled:opacity-50"
+            >
+              <Clock className="h-4 w-4" /> {scheduling ? "…" : "Rejalashtirish"}
+            </button>
+          </div>
+          <p className="mt-2 text-[11px] text-muted-foreground">
+            Xabar yuqoridagi matn bilan tanlangan vaqtda avtomatik yuboriladi.
+          </p>
+        </div>
+
+
+
         <div className="border-t border-border pt-4">
           <div className="mb-2 text-xs font-medium text-muted-foreground">Holatni belgilang</div>
           <div className="flex flex-wrap gap-2">

@@ -4,7 +4,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { supabase } from "@/integrations/supabase/client";
 import { fmtSum } from "@/lib/format";
 import {
-  Users, CalendarCheck, Wallet, AlertCircle, TrendingUp, Stethoscope, BellRing, Sparkles,
+  Users, CalendarCheck, Wallet, AlertCircle, TrendingUp, TrendingDown, Stethoscope, BellRing, Sparkles,
 } from "lucide-react";
 import {
   ResponsiveContainer, AreaChart, Area, XAxis, YAxis, Tooltip, CartesianGrid,

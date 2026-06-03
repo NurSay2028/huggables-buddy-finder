@@ -403,6 +403,12 @@ function Img({
           onChange={onFile}
         />
       </div>
+      <ImageCropDialog
+        file={cropFile}
+        aspect={aspect}
+        onCancel={() => setCropFile(null)}
+        onCropped={onCropped}
+      />
     </div>
   );
 }

@@ -83,11 +83,11 @@ function Dashboard() {
       const todayRevenue = (payToday.data ?? []).reduce((a: number, p: any) => a + Number(p.amount || 0), 0);
       const totalDebt = (debt.data ?? []).reduce((a: number, p: any) => a + Number(p.debt || 0), 0);
 
-      // monthly revenue (last 8 months)
-      const months: { key: string; m: string; v: number }[] = [];
+      // monthly revenue + expenses (last 8 months)
+      const months: { key: string; m: string; v: number; e: number }[] = [];
       for (let i = 7; i >= 0; i--) {
         const d = new Date(); d.setDate(1); d.setMonth(d.getMonth() - i);
-        months.push({ key: `${d.getFullYear()}-${d.getMonth()}`, m: MONTHS[d.getMonth()], v: 0 });
+        months.push({ key: `${d.getFullYear()}-${d.getMonth()}`, m: MONTHS[d.getMonth()], v: 0, e: 0 });
       }
       (paySix.data ?? []).forEach((p: any) => {
         const d = new Date(p.created_at);
@@ -95,6 +95,19 @@ function Dashboard() {
         const slot = months.find((x) => x.key === k);
         if (slot) slot.v += Number(p.amount || 0);
       });
+      (expSix.data ?? []).forEach((p: any) => {
+        const d = new Date(p.spent_at);
+        const k = `${d.getFullYear()}-${d.getMonth()}`;
+        const slot = months.find((x) => x.key === k);
+        if (slot) slot.e += Number(p.amount || 0);
+      });
+
+      const now = new Date();
+      const curKey = `${now.getFullYear()}-${now.getMonth()}`;
+      const curSlot = months.find((x) => x.key === curKey);
+      const monthRevenue = curSlot?.v ?? 0;
+      const monthExpenses = curSlot?.e ?? 0;
+      const monthProfit = monthRevenue - monthExpenses;
 
       // top doctor by appointments + revenue (via appointments → payments join is complex; use appointment count)
       const apptByDoc = new Map<string, number>();

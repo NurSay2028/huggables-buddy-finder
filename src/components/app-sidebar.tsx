@@ -6,6 +6,7 @@ import {
   Stethoscope,
   UserCog,
   Wallet,
+  TrendingDown,
   Boxes,
   BarChart3,
   Settings,

@@ -122,6 +122,12 @@ function ChartPage() {
                       <div className="font-medium">{PROC_LABEL[r.procedure]}</div>
                       <div className="text-xs text-muted-foreground">{r.doctors?.full_name ?? "—"} • {fmtDate(r.created_at)}</div>
                       {r.notes && <div className="mt-1 text-xs text-muted-foreground">{r.notes}</div>}
+                      {(r.before_image_url || r.after_image_url) && (
+                        <div className="mt-3 flex gap-2">
+                          {r.before_image_url && <RecordImage src={r.before_image_url} label="Oldin" />}
+                          {r.after_image_url && <RecordImage src={r.after_image_url} label="Keyin" />}
+                        </div>
+                      )}
                     </div>
                     <div className="font-medium">{fmtSum(r.cost)}</div>
                     <button onClick={() => remove(r.id)} className="rounded-md p-1.5 text-destructive hover:bg-destructive/10"><Trash2 className="h-4 w-4" /></button>
@@ -156,6 +162,15 @@ function ToothBtn({ num, proc, onClick }: { num: number; proc?: Procedure; onCli
     >
       {num}
     </button>
+  );
+}
+
+function RecordImage({ src, label }: { src: string; label: string }) {
+  return (
+    <a href={src} target="_blank" rel="noreferrer" className="group relative block h-16 w-16 overflow-hidden rounded-lg border border-border bg-muted">
+      <img src={src} alt={label} className="h-full w-full object-cover transition group-hover:scale-105" />
+      <span className="absolute bottom-0 left-0 right-0 bg-background/80 py-0.5 text-center text-[10px] font-medium">{label}</span>
+    </a>
   );
 }
 

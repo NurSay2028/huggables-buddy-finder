@@ -209,7 +209,7 @@ function Dashboard() {
         <div className="card col-span-2 p-6">
           <div className="mb-4 flex items-center justify-between">
             <div>
-              <h2 className="text-base font-semibold">Oylik daromad</h2>
+              <h2 className="text-base font-semibold">Daromad va xarajat</h2>
               <p className="text-sm text-muted-foreground">So‘nggi 8 oy</p>
             </div>
             <div className="flex items-center gap-1.5 rounded-full bg-success/10 px-2.5 py-1 text-xs font-medium text-success">
@@ -225,15 +225,20 @@ function Dashboard() {
                     <stop offset="0%" stopColor="oklch(0.62 0.12 200)" stopOpacity={0.3} />
                     <stop offset="100%" stopColor="oklch(0.62 0.12 200)" stopOpacity={0} />
                   </linearGradient>
+                  <linearGradient id="exp" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="oklch(0.7 0.15 40)" stopOpacity={0.25} />
+                    <stop offset="100%" stopColor="oklch(0.7 0.15 40)" stopOpacity={0} />
+                  </linearGradient>
                 </defs>
                 <CartesianGrid stroke="oklch(0.92 0.008 220)" strokeDasharray="3 3" vertical={false} />
                 <XAxis dataKey="m" stroke="oklch(0.5 0.02 240)" fontSize={12} tickLine={false} axisLine={false} />
                 <YAxis stroke="oklch(0.5 0.02 240)" fontSize={12} tickLine={false} axisLine={false} />
                 <Tooltip
-                  formatter={(v: any) => fmtSum(Number(v))}
+                  formatter={(v: any, n: any) => [fmtSum(Number(v)), n === "v" ? "Daromad" : "Xarajat"]}
                   contentStyle={{ borderRadius: 12, border: "1px solid oklch(0.92 0.008 220)", fontSize: 12 }}
                 />
                 <Area type="monotone" dataKey="v" stroke="oklch(0.62 0.12 200)" strokeWidth={2.5} fill="url(#rev)" />
+                <Area type="monotone" dataKey="e" stroke="oklch(0.7 0.15 40)" strokeWidth={2.5} fill="url(#exp)" />
               </AreaChart>
             </ResponsiveContainer>
           </div>

@@ -361,6 +361,8 @@ export type Database = {
           reminder_enabled: boolean
           reminder_note: string | null
           reminder_status: Database["public"]["Enums"]["reminder_status"]
+          telegram_chat_id: number | null
+          telegram_code: string | null
           treatment_type: Database["public"]["Enums"]["treatment_type"] | null
           updated_at: string
         }
@@ -383,6 +385,8 @@ export type Database = {
           reminder_enabled?: boolean
           reminder_note?: string | null
           reminder_status?: Database["public"]["Enums"]["reminder_status"]
+          telegram_chat_id?: number | null
+          telegram_code?: string | null
           treatment_type?: Database["public"]["Enums"]["treatment_type"] | null
           updated_at?: string
         }
@@ -405,6 +409,8 @@ export type Database = {
           reminder_enabled?: boolean
           reminder_note?: string | null
           reminder_status?: Database["public"]["Enums"]["reminder_status"]
+          telegram_chat_id?: number | null
+          telegram_code?: string | null
           treatment_type?: Database["public"]["Enums"]["treatment_type"] | null
           updated_at?: string
         }
@@ -503,6 +509,36 @@ export type Database = {
         }
         Relationships: []
       }
+      reminder_templates: {
+        Row: {
+          body: string
+          clinic_id: string
+          created_at: string
+          id: string
+          is_default: boolean
+          name: string
+          updated_at: string
+        }
+        Insert: {
+          body: string
+          clinic_id: string
+          created_at?: string
+          id?: string
+          is_default?: boolean
+          name: string
+          updated_at?: string
+        }
+        Update: {
+          body?: string
+          clinic_id?: string
+          created_at?: string
+          id?: string
+          is_default?: boolean
+          name?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           clinic_id: string | null
@@ -545,6 +581,7 @@ export type Database = {
         Returns: boolean
       }
       can_manage_landing: { Args: { _user_id: string }; Returns: boolean }
+      gen_patient_telegram_code: { Args: never; Returns: string }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]

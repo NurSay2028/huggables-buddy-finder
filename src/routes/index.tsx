@@ -39,8 +39,17 @@ export const Route = createFileRoute("/")({
 });
 
 function Index() {
+  const { contentJson } = Route.useLoaderData();
+  let initial: LandingContent | null = null;
+  if (contentJson) {
+    try {
+      initial = mergeContent(JSON.parse(contentJson));
+    } catch {
+      initial = null;
+    }
+  }
   return (
-    <LandingContentProvider>
+    <LandingContentProvider initial={initial}>
       <div className="min-h-screen bg-background">
         <Header />
         <main>

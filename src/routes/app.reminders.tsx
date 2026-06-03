@@ -196,6 +196,7 @@ function RemindersPage() {
       {target && (
         <ReminderModal
           row={target}
+          clinicId={clinic?.id ?? ""}
           clinicName={clinic?.name ?? ""}
           templates={templates}
           botUsername={botUsername}

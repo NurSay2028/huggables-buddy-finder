@@ -79,6 +79,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
+      { name: "google-site-verification", content: "mLT7x7ShmmLQpyXEN0lSXW7DzscLjbgSBJgUYEh6ZPs" },
       { title: "Djoni Dentist" },
       { name: "description", content: "My Dev Hub is a web application for managing client information and projects." },
       { name: "author", content: "Lovable" },

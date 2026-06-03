@@ -35,8 +35,18 @@ export const sendPatientReminder = createServerFn({ method: "POST" })
 export const getBotUsername = createServerFn({ method: "GET" }).handler(async () => {
   const lovableKey = process.env.LOVABLE_API_KEY;
   const tgKey = process.env.TELEGRAM_API_KEY;
-  if (!lovableKey || !tgKey) return { username: null as string | null };
+  if (!tgKey) return { username: null as string | null };
   try {
+    if (!lovableKey) {
+      const res = await fetch(`https://api.telegram.org/bot${tgKey}/getMe`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: "{}",
+      });
+      const data = (await res.json()) as { result?: { username?: string } };
+      return { username: data?.result?.username ?? null };
+    }
+
     const res = await fetch("https://connector-gateway.lovable.dev/telegram/getMe", {
       method: "POST",
       headers: {

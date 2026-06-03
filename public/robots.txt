@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://www.drjanibek.uz/sitemap.xml
+Sitemap: https://drjanibek.uz/sitemap.xml

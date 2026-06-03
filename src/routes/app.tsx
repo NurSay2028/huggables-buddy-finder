@@ -5,6 +5,13 @@ import { Loader2, Smile, Ban, ShieldAlert } from "lucide-react";
 
 export const Route = createFileRoute("/app")({
   component: AppLayout,
+  head: () => ({
+    meta: [
+      { title: "Boshqaruv paneli — Djoni Dentist" },
+      { name: "description", content: "Djoni Dentist klinika boshqaruv paneli." },
+      { name: "robots", content: "noindex, nofollow" },
+    ],
+  }),
 });
 
 function AppLayout() {

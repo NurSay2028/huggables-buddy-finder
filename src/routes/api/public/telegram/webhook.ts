@@ -56,7 +56,7 @@ export const Route = createFileRoute("/api/public/telegram/webhook")({
         if (text === "/start" || text.toLowerCase() === "start") {
           await reply(
             chatId,
-            "Assalomu alaykum! Klinika qabul eslatmalarini olish uchun telefon raqamingiz va klinikadan olgan kodingizni yuboring.\n\nNamuna:\n<code>+998901234567 AB12CD</code>",
+            "Assalawma aleykum! Klinika qabıllaw esletpelerin alıw ushın telefon nomerińizdi hám klinikadan alǵan kodıńızdı jiberiń.\n\nÚlgi:\n<code>+998901234567 AB12CD</code>",
           );
           return Response.json({ ok: true });
         }

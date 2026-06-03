@@ -31,6 +31,7 @@ export interface LandingContent {
     phone: string;
     phone_display: string;
     telegram_url: string;
+    instagram_url: string;
     email: string;
     address: string;
   };

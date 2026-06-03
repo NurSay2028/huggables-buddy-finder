@@ -49,6 +49,10 @@ export function Hero() {
             <img
               src={c.hero.image1}
               alt="Stomatologiya kresloasidagi tabassum qilayotgan bemor"
+              width={400}
+              height={208}
+              fetchPriority="high"
+              decoding="async"
               className="h-44 w-full object-cover sm:h-52"
             />
           </div>

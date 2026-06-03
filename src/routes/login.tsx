@@ -7,7 +7,14 @@ import { toast } from "sonner";
 
 export const Route = createFileRoute("/login")({
   component: LoginPage,
-  head: () => ({ meta: [{ title: "Kirish — Djoni Dentist" }] }),
+  head: () => ({
+    meta: [
+      { title: "Kirish — Djoni Dentist" },
+      { name: "description", content: "Djoni Dentist boshqaruv paneliga kirish sahifasi." },
+      { name: "robots", content: "noindex, nofollow" },
+    ],
+    links: [{ rel: "canonical", href: "https://drjanibek.uz/login" }],
+  }),
 });
 
 function LoginPage() {

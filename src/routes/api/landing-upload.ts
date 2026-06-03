@@ -10,6 +10,19 @@ function json(body: unknown, status = 200) {
   });
 }
 
+function isUploadFile(value: FormDataEntryValue | null): value is File {
+  return Boolean(
+    value &&
+      typeof value === "object" &&
+      "arrayBuffer" in value &&
+      typeof value.arrayBuffer === "function" &&
+      "type" in value &&
+      typeof value.type === "string" &&
+      "size" in value &&
+      typeof value.size === "number",
+  );
+}
+
 function getExtension(fileName: string, mimeType: string) {
   const fromName = fileName.split(".").pop()?.toLowerCase().replace(/[^a-z0-9]/g, "");
   if (fromName && ["jpg", "jpeg", "png", "webp", "gif", "avif"].includes(fromName)) return fromName;
@@ -29,55 +42,61 @@ export const Route = createFileRoute("/api/landing-upload")({
   server: {
     handlers: {
       POST: async ({ request }) => {
-        const authHeader = request.headers.get("authorization") ?? "";
-        const token = authHeader.startsWith("Bearer ") ? authHeader.slice(7) : null;
+        try {
+          const authHeader = request.headers.get("authorization") ?? "";
+          const token = authHeader.startsWith("Bearer ") ? authHeader.slice(7) : null;
 
-        if (!token) return json({ error: "Avval tizimga kiring" }, 401);
+          if (!token) return json({ error: "Avval tizimga kiring" }, 401);
 
-        const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-        const { data: userData, error: userError } = await supabaseAdmin.auth.getUser(token);
-        const userId = userData.user?.id;
+          const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+          const { data: userData, error: userError } = await supabaseAdmin.auth.getUser(token);
+          const userId = userData.user?.id;
 
-        if (userError || !userId) return json({ error: "Sessiya muddati tugagan. Qayta kiring." }, 401);
+          if (userError || !userId) return json({ error: "Sessiya muddati tugagan. Qayta kiring." }, 401);
 
-        const form = await request.formData();
-        const file = form.get("file");
-        const clinicId = String(form.get("clinicId") ?? "");
-        const requestedBucket = String(form.get("bucket") ?? "landing");
-        const folder = safePathPart(String(form.get("folder") ?? "images"), "images");
+          const form = await request.formData();
+          const file = form.get("file");
+          const clinicId = String(form.get("clinicId") ?? "");
+          const requestedBucket = String(form.get("bucket") ?? "landing");
+          const folder = safePathPart(String(form.get("folder") ?? "images"), "images");
 
-        if (!(file instanceof File)) return json({ error: "Rasm fayli topilmadi" }, 400);
-        if (!clinicId) return json({ error: "Klinika topilmadi" }, 400);
-        if (!file.type.startsWith("image/")) return json({ error: "Faqat rasm fayllari yuklanadi" }, 400);
-        if (file.size > MAX_IMAGE_BYTES) return json({ error: "Rasm hajmi 50MB dan oshmasin" }, 400);
-        if (!ALLOWED_BUCKETS.has(requestedBucket)) return json({ error: "Rasm saqlanadigan joy noto‘g‘ri" }, 400);
+          if (!isUploadFile(file)) return json({ error: "Rasm fayli topilmadi" }, 400);
+          if (!clinicId) return json({ error: "Klinika topilmadi" }, 400);
+          if (!file.type.startsWith("image/")) return json({ error: "Faqat rasm fayllari yuklanadi" }, 400);
+          if (file.size > MAX_IMAGE_BYTES) return json({ error: "Rasm hajmi 50MB dan oshmasin" }, 400);
+          if (!ALLOWED_BUCKETS.has(requestedBucket)) return json({ error: "Rasm saqlanadigan joy noto‘g‘ri" }, 400);
 
-        const { data: roleRows, error: roleError } = await supabaseAdmin
-          .from("user_roles")
-          .select("role, clinic_id")
-          .eq("user_id", userId);
+          const { data: roleRows, error: roleError } = await supabaseAdmin
+            .from("user_roles")
+            .select("role, clinic_id")
+            .eq("user_id", userId);
 
-        if (roleError) return json({ error: roleError.message }, 500);
+          if (roleError) return json({ error: "Ruxsat tekshirishda xatolik. Qayta urinib ko‘ring." }, 500);
 
-        const canUpload = (roleRows ?? []).some(
-          (row) => row.role === "super_admin" || row.clinic_id === clinicId,
-        );
+          const canUpload = (roleRows ?? []).some(
+            (row) => row.role === "super_admin" || row.clinic_id === clinicId,
+          );
 
-        if (!canUpload) return json({ error: "Bu klinika uchun rasm yuklashga ruxsat yo‘q" }, 403);
+          if (!canUpload) return json({ error: "Bu klinika uchun rasm yuklashga ruxsat yo‘q" }, 403);
 
-        const ext = getExtension(file.name, file.type);
-        const bucket = requestedBucket as "landing" | "logos";
-        const path = `${clinicId}/${folder}/${Date.now()}-${crypto.randomUUID()}.${ext}`;
-        const bytes = await file.arrayBuffer();
+          const fileName = "name" in file && typeof file.name === "string" ? file.name : "image";
+          const ext = getExtension(fileName, file.type);
+          const bucket = requestedBucket as "landing" | "logos";
+          const path = `${clinicId}/${folder}/${Date.now()}-${crypto.randomUUID()}.${ext}`;
+          const bytes = await file.arrayBuffer();
 
-        const { error: uploadError } = await supabaseAdmin.storage
-          .from(bucket)
-          .upload(path, bytes, { contentType: file.type, upsert: false });
+          const { error: uploadError } = await supabaseAdmin.storage
+            .from(bucket)
+            .upload(path, bytes, { contentType: file.type, upsert: false });
 
-        if (uploadError) return json({ error: uploadError.message }, 500);
+          if (uploadError) return json({ error: uploadError.message || "Rasmni saqlashda xatolik" }, 500);
 
-        const publicUrl = supabaseAdmin.storage.from(bucket).getPublicUrl(path).data.publicUrl;
-        return json({ url: publicUrl });
+          const publicUrl = supabaseAdmin.storage.from(bucket).getPublicUrl(path).data.publicUrl;
+          return json({ url: publicUrl });
+        } catch (error) {
+          console.error("landing-upload failed", error);
+          return json({ error: "Rasm yuklashda server xatosi. Sahifani yangilab qayta urinib ko‘ring." }, 500);
+        }
       },
     },
   },

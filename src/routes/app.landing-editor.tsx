@@ -29,7 +29,7 @@ async function uploadImage(file: File, clinicId: string): Promise<string> {
   const path = `${clinicId}/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
   const { error } = await supabase.storage
     .from("landing")
-    .upload(path, file, { upsert: true, contentType: file.type });
+    .upload(path, file, { upsert: false, contentType: file.type });
   if (error) throw error;
   return supabase.storage.from("landing").getPublicUrl(path).data.publicUrl;
 }

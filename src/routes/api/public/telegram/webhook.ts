@@ -67,7 +67,12 @@ export const Route = createFileRoute("/api/public/telegram/webhook")({
         const codeMatch = text
           .toUpperCase()
           .match(/\b[ABCDEFGHJKLMNPQRSTUVWXYZ23456789]{6}\b/);
-        const phoneDigits = normalizePhone(text);
+        // Strip the code from the text before extracting phone digits, otherwise
+        // digits inside the code (e.g. the "4" in JQN4HA) corrupt the phone number.
+        const textWithoutCode = codeMatch
+          ? text.toUpperCase().replace(codeMatch[0], " ")
+          : text;
+        const phoneDigits = normalizePhone(textWithoutCode);
 
         if (!codeMatch || phoneDigits.length < 7) {
           await reply(

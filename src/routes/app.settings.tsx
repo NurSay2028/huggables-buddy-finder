@@ -40,7 +40,7 @@ function SettingsPage() {
       });
   }, [clinic?.id]);
 
-  const onPickFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const onPickFile = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     e.target.value = "";
     if (!file || !clinic) return;
@@ -52,6 +52,12 @@ function SettingsPage() {
       toast.error("Rasm 50MB dan katta bo‘lmasligi kerak");
       return;
     }
+    setCropFile(file);
+  };
+
+  const onCropped = async (file: File) => {
+    setCropFile(null);
+    if (!clinic) return;
     setUploading(true);
     try {
       const url = await uploadAppImage(file, clinic.id, { bucket: "logos", folder: "logos" });

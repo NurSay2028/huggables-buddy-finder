@@ -4,10 +4,11 @@ import { useServerFn } from "@tanstack/react-start";
 import { useAuth } from "@/hooks/use-auth";
 import { supabase } from "@/integrations/supabase/client";
 import { PageHeader, EmptyState, Modal } from "@/components/page-header";
-import { fmtDate } from "@/lib/format";
+import { fmtDate, fmtDateTime, toLocalInput } from "@/lib/format";
 import {
   BellRing, Copy, Send, Search, Phone, CheckCircle2, MessageSquare,
-  Plus, Pencil, Trash2, Star, Link2, AlertCircle, X,
+  Plus, Pencil, Trash2, Star, Link2, AlertCircle, X, Clock,
+
 } from "lucide-react";
 import { toast } from "sonner";
 import {
@@ -196,6 +197,7 @@ function RemindersPage() {
       {target && (
         <ReminderModal
           row={target}
+          clinicId={clinic?.id ?? ""}
           clinicName={clinic?.name ?? ""}
           templates={templates}
           botUsername={botUsername}
@@ -235,9 +237,10 @@ function StatusBadge({ status }: { status: ReminderStatus }) {
 }
 
 function ReminderModal({
-  row, clinicName, templates, botUsername, onClose, onMark,
+  row, clinicId, clinicName, templates, botUsername, onClose, onMark,
 }: {
   row: Row;
+  clinicId: string;
   clinicName: string;
   templates: Template[];
   botUsername: string | null;
@@ -246,6 +249,8 @@ function ReminderModal({
 }) {
   const send = useServerFn(sendPatientReminder);
   const [sending, setSending] = useState(false);
+  const [scheduleAt, setScheduleAt] = useState("");
+  const [scheduling, setScheduling] = useState(false);
 
   const vars = useMemo(() => ({
     name: row.full_name,
@@ -279,6 +284,26 @@ function ReminderModal({
     } catch (e: any) {
       toast.error(e?.message ?? "Yuborib bo‘lmadi");
     } finally { setSending(false); }
+  };
+
+  const schedule = async () => {
+    if (!scheduleAt) return toast.error("Vaqtni tanlang");
+    const sendAt = new Date(scheduleAt);
+    if (isNaN(sendAt.getTime())) return toast.error("Noto‘g‘ri vaqt");
+    if (sendAt.getTime() < Date.now()) return toast.error("Vaqt o‘tib ketgan");
+    if (!row.telegram_chat_id) return toast.error("Bemor Telegram hisobini ulamagan.");
+    setScheduling(true);
+    const { error } = await supabase.from("scheduled_reminders").insert({
+      clinic_id: clinicId,
+      patient_id: row.id,
+      message: text,
+      send_at: sendAt.toISOString(),
+      status: "pending",
+    });
+    setScheduling(false);
+    if (error) return toast.error(error.message);
+    toast.success(`Rejalashtirildi: ${fmtDateTime(sendAt)} ✅`);
+    onMark("contacted");
   };
 
   const botLink = botUsername ? `https://t.me/${botUsername}` : null;
@@ -345,6 +370,33 @@ function ReminderModal({
           <button onClick={copy} className="btn-ghost"><Copy className="h-4 w-4" /> Nusxa</button>
           <a href={`tel:${row.phone}`} className="btn-ghost"><Phone className="h-4 w-4" /> Qo‘ng‘iroq</a>
         </div>
+
+        <div className="rounded-lg border border-border bg-muted/30 p-3">
+          <div className="mb-2 flex items-center gap-2 text-xs font-medium text-muted-foreground">
+            <Clock className="h-3.5 w-3.5" /> Belgilangan vaqtda yuborish (Telegram)
+          </div>
+          <div className="flex flex-wrap items-end gap-2">
+            <input
+              type="datetime-local"
+              className="input max-w-xs"
+              min={toLocalInput(new Date())}
+              value={scheduleAt}
+              onChange={(e) => setScheduleAt(e.target.value)}
+            />
+            <button
+              onClick={schedule}
+              disabled={scheduling || !row.telegram_chat_id || !scheduleAt}
+              className="btn-primary disabled:opacity-50"
+            >
+              <Clock className="h-4 w-4" /> {scheduling ? "…" : "Rejalashtirish"}
+            </button>
+          </div>
+          <p className="mt-2 text-[11px] text-muted-foreground">
+            Xabar yuqoridagi matn bilan tanlangan vaqtda avtomatik yuboriladi.
+          </p>
+        </div>
+
+
 
         <div className="border-t border-border pt-4">
           <div className="mb-2 text-xs font-medium text-muted-foreground">Holatni belgilang</div>

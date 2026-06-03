@@ -4,7 +4,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { supabase } from "@/integrations/supabase/client";
 import { fmtSum } from "@/lib/format";
 import {
-  Users, CalendarCheck, Wallet, AlertCircle, TrendingUp, Stethoscope, BellRing, Sparkles,
+  Users, CalendarCheck, Wallet, AlertCircle, TrendingUp, TrendingDown, Stethoscope, BellRing, Sparkles,
 } from "lucide-react";
 import {
   ResponsiveContainer, AreaChart, Area, XAxis, YAxis, Tooltip, CartesianGrid,
@@ -20,7 +20,10 @@ type Stats = {
   totalDebt: number;
   remindersDue: number;
   aiRequests: number;
-  revenueByMonth: { m: string; v: number }[];
+  monthRevenue: number;
+  monthExpenses: number;
+  monthProfit: number;
+  revenueByMonth: { m: string; v: number; e: number }[];
   topDoctor: { name: string; specialty: string; revenue: number; procedures: number } | null;
   schedule: { time: string; patient: string; service: string; doctor: string }[];
   recent: { name: string; phone: string; last: string }[];
@@ -48,7 +51,7 @@ function Dashboard() {
       const todayEnd = new Date(); todayEnd.setHours(23, 59, 59, 999);
       const sixMonthsAgo = new Date(); sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 7); sixMonthsAgo.setDate(1);
 
-      const [appts, payToday, patients, debt, paySix, appts6, doctors, todayList, recentP, reminders, aiReqs] = await Promise.all([
+      const [appts, payToday, patients, debt, paySix, expSix, appts6, doctors, todayList, recentP, reminders, aiReqs] = await Promise.all([
         supabase.from("appointments").select("id", { count: "exact", head: true })
           .eq("clinic_id", cid).gte("starts_at", todayStart.toISOString()).lte("starts_at", todayEnd.toISOString()),
         supabase.from("payments").select("amount").eq("clinic_id", cid)
@@ -57,6 +60,8 @@ function Dashboard() {
         supabase.from("patients").select("debt").eq("clinic_id", cid),
         supabase.from("payments").select("amount,created_at,doctor_id:appointment_id")
           .eq("clinic_id", cid).gte("created_at", sixMonthsAgo.toISOString()),
+        supabase.from("expenses").select("amount,spent_at")
+          .eq("clinic_id", cid).gte("spent_at", sixMonthsAgo.toISOString().slice(0, 10)),
         supabase.from("appointments").select("id,doctor_id,starts_at").eq("clinic_id", cid)
           .gte("starts_at", sixMonthsAgo.toISOString()),
         supabase.from("doctors").select("id,full_name,specialty").eq("clinic_id", cid),
@@ -78,11 +83,11 @@ function Dashboard() {
       const todayRevenue = (payToday.data ?? []).reduce((a: number, p: any) => a + Number(p.amount || 0), 0);
       const totalDebt = (debt.data ?? []).reduce((a: number, p: any) => a + Number(p.debt || 0), 0);
 
-      // monthly revenue (last 8 months)
-      const months: { key: string; m: string; v: number }[] = [];
+      // monthly revenue + expenses (last 8 months)
+      const months: { key: string; m: string; v: number; e: number }[] = [];
       for (let i = 7; i >= 0; i--) {
         const d = new Date(); d.setDate(1); d.setMonth(d.getMonth() - i);
-        months.push({ key: `${d.getFullYear()}-${d.getMonth()}`, m: MONTHS[d.getMonth()], v: 0 });
+        months.push({ key: `${d.getFullYear()}-${d.getMonth()}`, m: MONTHS[d.getMonth()], v: 0, e: 0 });
       }
       (paySix.data ?? []).forEach((p: any) => {
         const d = new Date(p.created_at);
@@ -90,6 +95,19 @@ function Dashboard() {
         const slot = months.find((x) => x.key === k);
         if (slot) slot.v += Number(p.amount || 0);
       });
+      (expSix.data ?? []).forEach((p: any) => {
+        const d = new Date(p.spent_at);
+        const k = `${d.getFullYear()}-${d.getMonth()}`;
+        const slot = months.find((x) => x.key === k);
+        if (slot) slot.e += Number(p.amount || 0);
+      });
+
+      const now = new Date();
+      const curKey = `${now.getFullYear()}-${now.getMonth()}`;
+      const curSlot = months.find((x) => x.key === curKey);
+      const monthRevenue = curSlot?.v ?? 0;
+      const monthExpenses = curSlot?.e ?? 0;
+      const monthProfit = monthRevenue - monthExpenses;
 
       // top doctor by appointments + revenue (via appointments → payments join is complex; use appointment count)
       const apptByDoc = new Map<string, number>();
@@ -111,7 +129,8 @@ function Dashboard() {
         totalDebt,
         remindersDue,
         aiRequests: aiReqs.count ?? 0,
-        revenueByMonth: months.map(({ m, v }) => ({ m, v })),
+        monthRevenue, monthExpenses, monthProfit,
+        revenueByMonth: months.map(({ m, v, e }) => ({ m, v, e })),
         topDoctor,
         schedule: (todayList.data ?? []).map((a: any) => ({
           time: new Date(a.starts_at).toLocaleTimeString("uz-UZ", { hour: "2-digit", minute: "2-digit" }),
@@ -142,6 +161,12 @@ function Dashboard() {
         <Stat icon={Wallet} label="Bugungi daromad" value={fmtSum(s?.todayRevenue ?? 0)} />
         <Stat icon={Users} label="Jami bemorlar" value={String(s?.totalPatients ?? 0)} />
         <Stat icon={AlertCircle} label="Qoldiq qarz" value={fmtSum(s?.totalDebt ?? 0)} tone="warning" />
+      </section>
+
+      <section className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-3">
+        <Stat icon={TrendingUp} label="Bu oy daromad" value={fmtSum(s?.monthRevenue ?? 0)} />
+        <Stat icon={TrendingDown} label="Bu oy xarajat" value={fmtSum(s?.monthExpenses ?? 0)} tone="warning" />
+        <Stat icon={Wallet} label="Bu oy sof foyda" value={fmtSum(s?.monthProfit ?? 0)} tone={(s?.monthProfit ?? 0) < 0 ? "warning" : undefined} />
       </section>
 
       {(s?.remindersDue ?? 0) > 0 && (
@@ -184,7 +209,7 @@ function Dashboard() {
         <div className="card col-span-2 p-6">
           <div className="mb-4 flex items-center justify-between">
             <div>
-              <h2 className="text-base font-semibold">Oylik daromad</h2>
+              <h2 className="text-base font-semibold">Daromad va xarajat</h2>
               <p className="text-sm text-muted-foreground">So‘nggi 8 oy</p>
             </div>
             <div className="flex items-center gap-1.5 rounded-full bg-success/10 px-2.5 py-1 text-xs font-medium text-success">
@@ -200,15 +225,20 @@ function Dashboard() {
                     <stop offset="0%" stopColor="oklch(0.62 0.12 200)" stopOpacity={0.3} />
                     <stop offset="100%" stopColor="oklch(0.62 0.12 200)" stopOpacity={0} />
                   </linearGradient>
+                  <linearGradient id="exp" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="oklch(0.7 0.15 40)" stopOpacity={0.25} />
+                    <stop offset="100%" stopColor="oklch(0.7 0.15 40)" stopOpacity={0} />
+                  </linearGradient>
                 </defs>
                 <CartesianGrid stroke="oklch(0.92 0.008 220)" strokeDasharray="3 3" vertical={false} />
                 <XAxis dataKey="m" stroke="oklch(0.5 0.02 240)" fontSize={12} tickLine={false} axisLine={false} />
                 <YAxis stroke="oklch(0.5 0.02 240)" fontSize={12} tickLine={false} axisLine={false} />
                 <Tooltip
-                  formatter={(v: any) => fmtSum(Number(v))}
+                  formatter={(v: any, n: any) => [fmtSum(Number(v)), n === "v" ? "Daromad" : "Xarajat"]}
                   contentStyle={{ borderRadius: 12, border: "1px solid oklch(0.92 0.008 220)", fontSize: 12 }}
                 />
                 <Area type="monotone" dataKey="v" stroke="oklch(0.62 0.12 200)" strokeWidth={2.5} fill="url(#rev)" />
+                <Area type="monotone" dataKey="e" stroke="oklch(0.7 0.15 40)" strokeWidth={2.5} fill="url(#exp)" />
               </AreaChart>
             </ResponsiveContainer>
           </div>

@@ -116,9 +116,9 @@ function ChartPage() {
             ) : (
               <div className="divide-y divide-border">
                 {records.map((r) => (
-                  <div key={r.id} className="flex items-center gap-4 p-4">
-                    <div className="grid h-10 w-10 place-items-center rounded-lg bg-muted text-sm font-semibold">{r.tooth_number}</div>
-                    <div className="flex-1">
+                  <div key={r.id} className="flex items-center gap-3 p-4">
+                    <div className="grid h-10 w-10 shrink-0 place-items-center rounded-lg bg-muted text-sm font-semibold">{r.tooth_number}</div>
+                    <div className="min-w-0 flex-1">
                       <div className="font-medium">{PROC_LABEL[r.procedure]}</div>
                       <div className="text-xs text-muted-foreground">{r.doctors?.full_name ?? "—"} • {fmtDate(r.created_at)}</div>
                       {r.notes && <div className="mt-1 text-xs text-muted-foreground">{r.notes}</div>}
@@ -129,8 +129,8 @@ function ChartPage() {
                         </div>
                       )}
                     </div>
-                    <div className="font-medium">{fmtSum(r.cost)}</div>
-                    <button onClick={() => remove(r.id)} className="rounded-md p-1.5 text-destructive hover:bg-destructive/10"><Trash2 className="h-4 w-4" /></button>
+                    <div className="shrink-0 whitespace-nowrap text-right text-sm font-semibold">{fmtSum(r.cost)}</div>
+                    <button onClick={() => remove(r.id)} className="shrink-0 rounded-md p-1.5 text-destructive hover:bg-destructive/10"><Trash2 className="h-4 w-4" /></button>
                   </div>
                 ))}
               </div>

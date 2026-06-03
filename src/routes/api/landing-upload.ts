@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 
-const MAX_IMAGE_BYTES = 30 * 1024 * 1024;
+const MAX_IMAGE_BYTES = 50 * 1024 * 1024;
+const ALLOWED_BUCKETS = new Set(["landing", "logos"]);
 
 function json(body: unknown, status = 200) {
   return new Response(JSON.stringify(body), {
@@ -17,6 +18,11 @@ function getExtension(fileName: string, mimeType: string) {
   if (mimeType === "image/gif") return "gif";
   if (mimeType === "image/avif") return "avif";
   return "jpg";
+}
+
+function safePathPart(value: string, fallback: string) {
+  const clean = value.toLowerCase().replace(/[^a-z0-9_-]/g, "-").replace(/-+/g, "-").slice(0, 40);
+  return clean || fallback;
 }
 
 export const Route = createFileRoute("/api/landing-upload")({
@@ -37,11 +43,14 @@ export const Route = createFileRoute("/api/landing-upload")({
         const form = await request.formData();
         const file = form.get("file");
         const clinicId = String(form.get("clinicId") ?? "");
+        const requestedBucket = String(form.get("bucket") ?? "landing");
+        const folder = safePathPart(String(form.get("folder") ?? "images"), "images");
 
         if (!(file instanceof File)) return json({ error: "Rasm fayli topilmadi" }, 400);
         if (!clinicId) return json({ error: "Klinika topilmadi" }, 400);
         if (!file.type.startsWith("image/")) return json({ error: "Faqat rasm fayllari yuklanadi" }, 400);
-        if (file.size > MAX_IMAGE_BYTES) return json({ error: "Rasm hajmi 30MB dan oshmasin" }, 400);
+        if (file.size > MAX_IMAGE_BYTES) return json({ error: "Rasm hajmi 50MB dan oshmasin" }, 400);
+        if (!ALLOWED_BUCKETS.has(requestedBucket)) return json({ error: "Rasm saqlanadigan joy noto‘g‘ri" }, 400);
 
         const { data: roleRows, error: roleError } = await supabaseAdmin
           .from("user_roles")
@@ -57,16 +66,17 @@ export const Route = createFileRoute("/api/landing-upload")({
         if (!canUpload) return json({ error: "Bu klinika uchun rasm yuklashga ruxsat yo‘q" }, 403);
 
         const ext = getExtension(file.name, file.type);
-        const path = `${clinicId}/${Date.now()}-${crypto.randomUUID()}.${ext}`;
+        const bucket = requestedBucket as "landing" | "logos";
+        const path = `${clinicId}/${folder}/${Date.now()}-${crypto.randomUUID()}.${ext}`;
         const bytes = await file.arrayBuffer();
 
         const { error: uploadError } = await supabaseAdmin.storage
-          .from("landing")
+          .from(bucket)
           .upload(path, bytes, { contentType: file.type, upsert: false });
 
         if (uploadError) return json({ error: uploadError.message }, 500);
 
-        const publicUrl = supabaseAdmin.storage.from("landing").getPublicUrl(path).data.publicUrl;
+        const publicUrl = supabaseAdmin.storage.from(bucket).getPublicUrl(path).data.publicUrl;
         return json({ url: publicUrl });
       },
     },

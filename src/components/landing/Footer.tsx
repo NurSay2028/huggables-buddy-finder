@@ -2,10 +2,10 @@ import { Phone, Mail, MapPin, Send, Instagram } from "lucide-react";
 import { useLanding } from "@/lib/landing-content";
 
 const links = [
-  { label: "Biz haqimizda", href: "#about" },
-  { label: "Xizmatlar", href: "#services" },
-  { label: "Shifokor", href: "#doctor" },
-  { label: "Savol-javob", href: "#faq" },
+  { label: "Biz haqqımızda", href: "#about" },
+  { label: "Xızmetler", href: "#services" },
+  { label: "Shıpaker", href: "#doctor" },
+  { label: "Soraw-juwap", href: "#faq" },
 ];
 
 export function Footer() {
@@ -28,7 +28,7 @@ export function Footer() {
           </div>
 
           <div>
-            <h4 className="font-bold">Sahifalar</h4>
+            <h4 className="font-bold">Betler</h4>
             <ul className="mt-4 space-y-2 text-sm opacity-90">
               {links.map((l) => (
                 <li key={l.href}>
@@ -41,7 +41,7 @@ export function Footer() {
           </div>
 
           <div>
-            <h4 className="font-bold">Bog'lanish</h4>
+            <h4 className="font-bold">Baylanıs</h4>
             <ul className="mt-4 space-y-3 text-sm opacity-90">
               <li className="flex items-center gap-2">
                 <Phone className="h-4 w-4 shrink-0" />
@@ -79,7 +79,7 @@ export function Footer() {
           </div>
 
           <div>
-            <h4 className="font-bold">Manzil</h4>
+            <h4 className="font-bold">Mánzil</h4>
             <p className="mt-4 flex items-start gap-2 text-sm opacity-90">
               <MapPin className="mt-0.5 h-4 w-4 shrink-0" />
               {c.contact.address}
@@ -99,7 +99,7 @@ export function Footer() {
             >
               keta.uz
             </a>{" "}
-            tomonidan ishlab chiqilgan
+            tárepinen islep shıǵılǵan
           </p>
         </div>
       </div>

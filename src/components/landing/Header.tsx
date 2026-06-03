@@ -3,11 +3,11 @@ import { Menu, X, Phone } from "lucide-react";
 import { useLanding } from "@/lib/landing-content";
 
 const navLinks = [
-  { label: "Biz haqimizda", href: "#about" },
-  { label: "Xizmatlar", href: "#services" },
-  { label: "Sharhlar", href: "#testimonials" },
-  { label: "Shifokor", href: "#doctor" },
-  { label: "Savol-javob", href: "#faq" },
+  { label: "Biz haqqımızda", href: "#about" },
+  { label: "Xızmetler", href: "#services" },
+  { label: "Pikirler", href: "#testimonials" },
+  { label: "Shıpaker", href: "#doctor" },
+  { label: "Soraw-juwap", href: "#faq" },
 ];
 
 export function Header() {
@@ -47,7 +47,7 @@ export function Header() {
           className="hidden items-center gap-2 rounded-full bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground shadow-card transition-transform hover:scale-105 lg:inline-flex"
         >
           <Phone className="h-4 w-4" />
-          Bog'lanish
+          Baylanıs
         </a>
 
         <button
@@ -77,7 +77,7 @@ export function Header() {
               className="mt-2 inline-flex items-center justify-center gap-2 rounded-full bg-primary px-5 py-3 text-sm font-semibold text-primary-foreground"
             >
               <Phone className="h-4 w-4" />
-              Bog'lanish
+              Baylanıs
             </a>
           </nav>
         </div>

@@ -119,6 +119,7 @@ function LandingEditorPage() {
           <Text label="Telefon (link uchun, masalan +998913808667)" value={c.contact.phone} onChange={(v) => setField("contact", "phone", v)} />
           <Text label="Telefon (ko‘rinish)" value={c.contact.phone_display} onChange={(v) => setField("contact", "phone_display", v)} />
           <Text label="Telegram havola" value={c.contact.telegram_url} onChange={(v) => setField("contact", "telegram_url", v)} />
+          <Text label="Instagram havola" value={c.contact.instagram_url} onChange={(v) => setField("contact", "instagram_url", v)} />
           <Text label="Email" value={c.contact.email} onChange={(v) => setField("contact", "email", v)} />
           <Text label="Manzil" value={c.contact.address} onChange={(v) => setField("contact", "address", v)} />
         </Section>

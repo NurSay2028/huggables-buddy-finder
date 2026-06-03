@@ -4,6 +4,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { supabase } from "@/integrations/supabase/client";
 import { uploadAppImage } from "@/lib/image-upload";
 import { PageHeader } from "@/components/page-header";
+import { ImageCropDialog } from "@/components/image-crop-dialog";
 import { toast } from "sonner";
 import { Upload, Loader2, X } from "lucide-react";
 
@@ -20,6 +21,7 @@ function SettingsPage() {
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
+  const [cropFile, setCropFile] = useState<File | null>(null);
 
   useEffect(() => {
     if (!clinic) return;
@@ -38,7 +40,7 @@ function SettingsPage() {
       });
   }, [clinic?.id]);
 
-  const onPickFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const onPickFile = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     e.target.value = "";
     if (!file || !clinic) return;
@@ -50,6 +52,12 @@ function SettingsPage() {
       toast.error("Rasm 50MB dan katta bo‘lmasligi kerak");
       return;
     }
+    setCropFile(file);
+  };
+
+  const onCropped = async (file: File) => {
+    setCropFile(null);
+    if (!clinic) return;
     setUploading(true);
     try {
       const url = await uploadAppImage(file, clinic.id, { bucket: "logos", folder: "logos" });
@@ -137,6 +145,13 @@ function SettingsPage() {
           <button type="submit" disabled={saving} className="btn-primary">{saving ? "Saqlanmoqda…" : "Saqlash"}</button>
         </div>
       </form>
+      <ImageCropDialog
+        file={cropFile}
+        aspect={1}
+        maxWidth={512}
+        onCancel={() => setCropFile(null)}
+        onCropped={onCropped}
+      />
     </div>
   );
 }

@@ -4,6 +4,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { supabase } from "@/integrations/supabase/client";
 import { uploadAppImage } from "@/lib/image-upload";
 import { PageHeader } from "@/components/page-header";
+import { ImageCropDialog } from "@/components/image-crop-dialog";
 import { toast } from "sonner";
 import { Upload, Loader2, X } from "lucide-react";
 

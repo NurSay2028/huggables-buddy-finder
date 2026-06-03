@@ -273,6 +273,50 @@ export type Database = {
           },
         ]
       }
+      expenses: {
+        Row: {
+          amount: number
+          category: string
+          clinic_id: string
+          created_at: string
+          created_by: string | null
+          description: string | null
+          id: string
+          spent_at: string
+          updated_at: string
+        }
+        Insert: {
+          amount?: number
+          category?: string
+          clinic_id: string
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          spent_at?: string
+          updated_at?: string
+        }
+        Update: {
+          amount?: number
+          category?: string
+          clinic_id?: string
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          spent_at?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "expenses_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
+            referencedRelation: "clinics"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       inventory: {
         Row: {
           category: string | null
@@ -539,6 +583,63 @@ export type Database = {
         }
         Relationships: []
       }
+      scheduled_reminders: {
+        Row: {
+          clinic_id: string
+          created_at: string
+          created_by: string | null
+          error: string | null
+          id: string
+          message: string
+          patient_id: string
+          send_at: string
+          sent_at: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          clinic_id: string
+          created_at?: string
+          created_by?: string | null
+          error?: string | null
+          id?: string
+          message: string
+          patient_id: string
+          send_at: string
+          sent_at?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          clinic_id?: string
+          created_at?: string
+          created_by?: string | null
+          error?: string | null
+          id?: string
+          message?: string
+          patient_id?: string
+          send_at?: string
+          sent_at?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "scheduled_reminders_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
+            referencedRelation: "clinics"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "scheduled_reminders_patient_id_fkey"
+            columns: ["patient_id"]
+            isOneToOne: false
+            referencedRelation: "patients"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_roles: {
         Row: {
           clinic_id: string | null
@@ -589,6 +690,7 @@ export type Database = {
         }
         Returns: boolean
       }
+      is_clinic_member: { Args: { _user_id: string }; Returns: boolean }
       is_super_admin: { Args: { _user_id: string }; Returns: boolean }
       user_clinic_id: { Args: { _user_id: string }; Returns: string }
     }

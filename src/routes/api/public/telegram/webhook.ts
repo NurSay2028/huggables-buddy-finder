@@ -69,7 +69,7 @@ export const Route = createFileRoute("/api/public/telegram/webhook")({
         if (!codeMatch || phoneDigits.length < 7) {
           await reply(
             chatId,
-            "Iltimos telefon raqamingiz va kodingizni birga yuboring.\n\nNamuna:\n<code>+998901234567 AB12CD</code>",
+            "Iltimas telefon nomerińizdi hám kodıńızdı birge jiberiń.\n\nÚlgi:\n<code>+998901234567 AB12CD</code>",
           );
           return Response.json({ ok: true });
         }

@@ -4,9 +4,10 @@ import { useAuth } from "@/hooks/use-auth";
 import { supabase } from "@/integrations/supabase/client";
 import { PageHeader, EmptyState, Modal } from "@/components/page-header";
 import { fmtDate, fmtSum } from "@/lib/format";
-import { Plus, Pencil, Trash2, Search, Phone, BellRing } from "lucide-react";
+import { exportToExcel } from "@/lib/excel-export";
+import { Plus, Pencil, Trash2, Search, Phone, BellRing, FileDown } from "lucide-react";
 import { toast } from "sonner";
-import { TREATMENT_LABEL, REMINDER_DAYS_OPTIONS, type TreatmentType, type ReminderStatus } from "@/lib/reminders";
+import { TREATMENT_LABEL, REMINDER_STATUS_LABEL, REMINDER_DAYS_OPTIONS, type TreatmentType, type ReminderStatus } from "@/lib/reminders";
 
 export const Route = createFileRoute("/app/patients")({
   component: PatientsPage,

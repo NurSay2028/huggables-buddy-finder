@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { PageHeader } from "@/components/page-header";
+import { useAuth } from "@/hooks/use-auth";
 import {
   mergeContent,
   type LandingContent,
@@ -23,9 +24,9 @@ const IMAGE_PATHS: [keyof LandingContent, string][] = [
   ["faq", "image"],
 ];
 
-async function uploadImage(file: File): Promise<string> {
+async function uploadImage(file: File, clinicId: string): Promise<string> {
   const ext = (file.name.split(".").pop() || "jpg").toLowerCase();
-  const path = `${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+  const path = `${clinicId}/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
   const { error } = await supabase.storage
     .from("landing")
     .upload(path, file, { upsert: true, contentType: file.type });
@@ -331,6 +332,7 @@ function Img({
   value: string;
   onChange: (v: string) => void;
 }) {
+  const { clinic } = useAuth();
   const inputRef = useRef<HTMLInputElement>(null);
   const [uploading, setUploading] = useState(false);
 
@@ -344,9 +346,13 @@ function Img({
       toast.error("Faqat rasm fayllari");
       return;
     }
+    if (!clinic) {
+      toast.error("Klinika topilmadi. Qayta kirib ko‘ring.");
+      return;
+    }
     setUploading(true);
     try {
-      const url = await uploadImage(file);
+      const url = await uploadImage(file, clinic.id);
       onChange(url);
       toast.success("Rasm yuklandi");
     } catch (err) {

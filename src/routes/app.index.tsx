@@ -163,6 +163,12 @@ function Dashboard() {
         <Stat icon={AlertCircle} label="Qoldiq qarz" value={fmtSum(s?.totalDebt ?? 0)} tone="warning" />
       </section>
 
+      <section className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-3">
+        <Stat icon={TrendingUp} label="Bu oy daromad" value={fmtSum(s?.monthRevenue ?? 0)} />
+        <Stat icon={TrendingDown} label="Bu oy xarajat" value={fmtSum(s?.monthExpenses ?? 0)} tone="warning" />
+        <Stat icon={Wallet} label="Bu oy sof foyda" value={fmtSum(s?.monthProfit ?? 0)} tone={(s?.monthProfit ?? 0) < 0 ? "warning" : undefined} />
+      </section>
+
       {(s?.remindersDue ?? 0) > 0 && (
         <Link
           to="/app/reminders"

@@ -1,9 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useAuth } from "@/hooks/use-auth";
 import { supabase } from "@/integrations/supabase/client";
+import { uploadAppImage } from "@/lib/image-upload";
 import { PageHeader, EmptyState, Modal } from "@/components/page-header";
-import { Plus, Pencil, Trash2, UserCog } from "lucide-react";
+import { Loader2, Plus, Pencil, Trash2, Upload, UserCog, X } from "lucide-react";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/app/doctors")({
@@ -15,6 +16,7 @@ type Doctor = {
   full_name: string;
   specialty: string | null;
   phone: string | null;
+  photo_url: string | null;
   salary_percentage: number;
   active: boolean;
 };
@@ -29,7 +31,7 @@ function DoctorsPage() {
     if (!clinic) return;
     const { data, error } = await supabase
       .from("doctors")
-      .select("id,full_name,specialty,phone,salary_percentage,active")
+      .select("id,full_name,specialty,phone,photo_url,salary_percentage,active")
       .eq("clinic_id", clinic.id)
       .order("created_at", { ascending: false });
     if (error) return toast.error(error.message);

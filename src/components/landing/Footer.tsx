@@ -61,6 +61,17 @@ export function Footer() {
                 </a>
               </li>
               <li className="flex items-center gap-2">
+                <Instagram className="h-4 w-4 shrink-0" />
+                <a
+                  href={c.contact.instagram_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hover:underline"
+                >
+                  Instagram
+                </a>
+              </li>
+              <li className="flex items-center gap-2">
                 <Mail className="h-4 w-4 shrink-0" />
                 {c.contact.email}
               </li>

@@ -20,7 +20,10 @@ type Stats = {
   totalDebt: number;
   remindersDue: number;
   aiRequests: number;
-  revenueByMonth: { m: string; v: number }[];
+  monthRevenue: number;
+  monthExpenses: number;
+  monthProfit: number;
+  revenueByMonth: { m: string; v: number; e: number }[];
   topDoctor: { name: string; specialty: string; revenue: number; procedures: number } | null;
   schedule: { time: string; patient: string; service: string; doctor: string }[];
   recent: { name: string; phone: string; last: string }[];

@@ -28,6 +28,7 @@ import { Route as AppExpensesRouteImport } from './routes/app.expenses'
 import { Route as AppDoctorsRouteImport } from './routes/app.doctors'
 import { Route as AppDentalChartRouteImport } from './routes/app.dental-chart'
 import { Route as AppAppointmentsRouteImport } from './routes/app.appointments'
+import { Route as ApiLandingUploadRouteImport } from './routes/api/landing-upload'
 import { Route as ApiPublicTelegramWebhookRouteImport } from './routes/api/public/telegram/webhook'
 import { Route as ApiPublicHooksSendRemindersRouteImport } from './routes/api/public/hooks/send-reminders'
 import { Route as ApiPublicHooksProcessScheduledRouteImport } from './routes/api/public/hooks/process-scheduled'
@@ -127,6 +128,11 @@ const AppAppointmentsRoute = AppAppointmentsRouteImport.update({
   path: '/appointments',
   getParentRoute: () => AppRoute,
 } as any)
+const ApiLandingUploadRoute = ApiLandingUploadRouteImport.update({
+  id: '/api/landing-upload',
+  path: '/api/landing-upload',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPublicTelegramWebhookRoute =
   ApiPublicTelegramWebhookRouteImport.update({
     id: '/api/public/telegram/webhook',
@@ -151,6 +157,7 @@ export interface FileRoutesByFullPath {
   '/admin': typeof AdminRoute
   '/app': typeof AppRouteWithChildren
   '/login': typeof LoginRoute
+  '/api/landing-upload': typeof ApiLandingUploadRoute
   '/app/appointments': typeof AppAppointmentsRoute
   '/app/dental-chart': typeof AppDentalChartRoute
   '/app/doctors': typeof AppDoctorsRoute
@@ -174,6 +181,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/admin': typeof AdminRoute
   '/login': typeof LoginRoute
+  '/api/landing-upload': typeof ApiLandingUploadRoute
   '/app/appointments': typeof AppAppointmentsRoute
   '/app/dental-chart': typeof AppDentalChartRoute
   '/app/doctors': typeof AppDoctorsRoute
@@ -199,6 +207,7 @@ export interface FileRoutesById {
   '/admin': typeof AdminRoute
   '/app': typeof AppRouteWithChildren
   '/login': typeof LoginRoute
+  '/api/landing-upload': typeof ApiLandingUploadRoute
   '/app/appointments': typeof AppAppointmentsRoute
   '/app/dental-chart': typeof AppDentalChartRoute
   '/app/doctors': typeof AppDoctorsRoute
@@ -225,6 +234,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/app'
     | '/login'
+    | '/api/landing-upload'
     | '/app/appointments'
     | '/app/dental-chart'
     | '/app/doctors'
@@ -248,6 +258,7 @@ export interface FileRouteTypes {
     | '/'
     | '/admin'
     | '/login'
+    | '/api/landing-upload'
     | '/app/appointments'
     | '/app/dental-chart'
     | '/app/doctors'
@@ -272,6 +283,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/app'
     | '/login'
+    | '/api/landing-upload'
     | '/app/appointments'
     | '/app/dental-chart'
     | '/app/doctors'
@@ -297,6 +309,7 @@ export interface RootRouteChildren {
   AdminRoute: typeof AdminRoute
   AppRoute: typeof AppRouteWithChildren
   LoginRoute: typeof LoginRoute
+  ApiLandingUploadRoute: typeof ApiLandingUploadRoute
   ApiPublicHooksProcessScheduledRoute: typeof ApiPublicHooksProcessScheduledRoute
   ApiPublicHooksSendRemindersRoute: typeof ApiPublicHooksSendRemindersRoute
   ApiPublicTelegramWebhookRoute: typeof ApiPublicTelegramWebhookRoute
@@ -437,6 +450,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppAppointmentsRouteImport
       parentRoute: typeof AppRoute
     }
+    '/api/landing-upload': {
+      id: '/api/landing-upload'
+      path: '/api/landing-upload'
+      fullPath: '/api/landing-upload'
+      preLoaderRoute: typeof ApiLandingUploadRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/telegram/webhook': {
       id: '/api/public/telegram/webhook'
       path: '/api/public/telegram/webhook'
@@ -504,6 +524,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminRoute: AdminRoute,
   AppRoute: AppRouteWithChildren,
   LoginRoute: LoginRoute,
+  ApiLandingUploadRoute: ApiLandingUploadRoute,
   ApiPublicHooksProcessScheduledRoute: ApiPublicHooksProcessScheduledRoute,
   ApiPublicHooksSendRemindersRoute: ApiPublicHooksSendRemindersRoute,
   ApiPublicTelegramWebhookRoute: ApiPublicTelegramWebhookRoute,
@@ -511,3 +532,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}

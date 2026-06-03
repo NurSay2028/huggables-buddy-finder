@@ -49,7 +49,7 @@ export function BookingDialog() {
     });
     setSubmitting(false);
     if (error) {
-      alert("Xatolik yuz berdi. Iltimos qaytadan urinib ko'ring.");
+      alert("Qátelik júz berdi. Iltimas qaytadan urinip kóriń.");
       return;
     }
     setDone(true);
@@ -73,13 +73,13 @@ export function BookingDialog() {
               <CalendarCheck className="h-5 w-5" />
             </div>
             <div>
-              <h2 className="text-lg font-bold text-foreground">Qabulga yozilish</h2>
+              <h2 className="text-lg font-bold text-foreground">Qabıllawǵa jazılıw</h2>
               <p className="text-xs text-muted-foreground">Djoni Dentist — Nukus</p>
             </div>
           </div>
           <button
             onClick={() => setOpen(false)}
-            aria-label="Yopish"
+            aria-label="Jabıw"
             className="grid h-9 w-9 place-items-center rounded-lg text-muted-foreground hover:bg-accent"
           >
             <X className="h-5 w-5" />
@@ -89,9 +89,9 @@ export function BookingDialog() {
         {done ? (
           <div className="py-8 text-center">
             <CheckCircle2 className="mx-auto h-12 w-12 text-primary" />
-            <h3 className="mt-4 text-lg font-semibold text-foreground">Rahmat!</h3>
+            <h3 className="mt-4 text-lg font-semibold text-foreground">Raxmet!</h3>
             <p className="mt-1 text-sm text-muted-foreground">
-              Arizangiz qabul qilindi. Tez orada siz bilan bog'lanamiz.
+              Arzańız qabıl etildi. Tez arada siz benen baylanısamız.
             </p>
             <button
               onClick={() => setOpen(false)}
@@ -103,17 +103,17 @@ export function BookingDialog() {
         ) : (
           <form onSubmit={submit} className="mt-5 space-y-3">
             <div>
-              <label className="mb-1 block text-sm font-medium text-foreground">Ism familiya *</label>
+              <label className="mb-1 block text-sm font-medium text-foreground">Atı familiyası *</label>
               <input
                 required
                 value={form.full_name}
                 onChange={(e) => setForm({ ...form, full_name: e.target.value })}
                 className="input"
-                placeholder="Ism familiyangiz"
+                placeholder="Atı familiyańız"
               />
             </div>
             <div>
-              <label className="mb-1 block text-sm font-medium text-foreground">Telefon raqam *</label>
+              <label className="mb-1 block text-sm font-medium text-foreground">Telefon nomeri *</label>
               <input
                 required
                 type="tel"
@@ -124,17 +124,17 @@ export function BookingDialog() {
               />
             </div>
             <div>
-              <label className="mb-1 block text-sm font-medium text-foreground">Muammo / izoh</label>
+              <label className="mb-1 block text-sm font-medium text-foreground">Mashqala / túsindirme</label>
               <textarea
                 value={form.problem}
                 onChange={(e) => setForm({ ...form, problem: e.target.value })}
                 className="input min-h-[72px] resize-none"
-                placeholder="Tishingiz haqida qisqacha yozing"
+                placeholder="Tisińiz haqqında qısqasha jazıń"
               />
             </div>
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="mb-1 block text-sm font-medium text-foreground">Sana</label>
+                <label className="mb-1 block text-sm font-medium text-foreground">Sáne</label>
                 <input
                   type="date"
                   value={form.preferred_date}
@@ -143,7 +143,7 @@ export function BookingDialog() {
                 />
               </div>
               <div>
-                <label className="mb-1 block text-sm font-medium text-foreground">Vaqt</label>
+                <label className="mb-1 block text-sm font-medium text-foreground">Waqıt</label>
                 <input
                   type="time"
                   value={form.preferred_time}
@@ -158,7 +158,7 @@ export function BookingDialog() {
               className="mt-2 inline-flex w-full items-center justify-center gap-2 rounded-full bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground shadow-elegant transition hover:opacity-90 disabled:opacity-60"
             >
               {submitting && <Loader2 className="h-4 w-4 animate-spin" />}
-              Yuborish
+              Jiberiw
             </button>
           </form>
         )}

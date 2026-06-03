@@ -4,6 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { PageHeader } from "@/components/page-header";
 import { useAuth } from "@/hooks/use-auth";
 import { uploadAppImage } from "@/lib/image-upload";
+import { ImageCropDialog } from "@/components/image-crop-dialog";
 import {
   mergeContent,
   type LandingContent,

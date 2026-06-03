@@ -222,7 +222,9 @@ export function LandingContentProvider({
   const [content, setContent] = useState<LandingContent>(initial ?? DEFAULT_CONTENT);
 
   useEffect(() => {
-    if (initial) return; // already have server content, no need to refetch
+    // Always refresh in the background so edits appear without a rebuild.
+    // We start from the server-provided `initial`, so this rarely changes
+    // anything visible (no flicker) but keeps the page up to date.
     let active = true;
     (async () => {
       const { data } = await supabase
@@ -235,7 +237,7 @@ export function LandingContentProvider({
     return () => {
       active = false;
     };
-  }, [initial]);
+  }, []);
 
   return (
     <LandingContentContext.Provider value={content}>

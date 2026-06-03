@@ -88,7 +88,19 @@ export function Footer() {
         </div>
 
         <div className="border-t border-primary-foreground/20 py-6 text-center text-sm opacity-80">
-          {c.footer.copyright}
+          <p>{c.footer.copyright}</p>
+          <p className="mt-2 opacity-90">
+            Bu sayt{" "}
+            <a
+              href="https://keta.uz"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-semibold underline underline-offset-2 hover:opacity-100"
+            >
+              keta.uz
+            </a>{" "}
+            tomonidan ishlab chiqilgan
+          </p>
         </div>
       </div>
     </footer>

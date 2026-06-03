@@ -49,6 +49,7 @@ function Index() {
         </main>
         <Footer />
         <BookingDialog />
+        <AiSupport />
       </div>
     </LandingContentProvider>
   );

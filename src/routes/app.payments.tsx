@@ -4,7 +4,8 @@ import { useAuth } from "@/hooks/use-auth";
 import { supabase } from "@/integrations/supabase/client";
 import { PageHeader, EmptyState, Modal } from "@/components/page-header";
 import { fmtDateTime, fmtSum } from "@/lib/format";
-import { Plus, Trash2, Wallet } from "lucide-react";
+import { exportToExcel } from "@/lib/excel-export";
+import { Plus, Trash2, Wallet, FileDown } from "lucide-react";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/app/payments")({
@@ -63,12 +64,33 @@ function PaymentsPage() {
   const todayTotal = (rows ?? []).filter((r) => new Date(r.created_at) >= today).reduce((s, r) => s + Number(r.amount), 0);
   const totalAll = (rows ?? []).reduce((s, r) => s + Number(r.amount), 0);
 
+  const exportExcel = () => {
+    if (!rows?.length) return toast.error("Eksport uchun to‘lov yo‘q");
+    exportToExcel(
+      rows.map((p) => ({
+        "Sana": fmtDateTime(p.created_at),
+        "Bemor": p.patients?.full_name ?? "—",
+        "Usul": METHOD_LABEL[p.method],
+        "Izoh": p.description || "—",
+        "Summa (so‘m)": Number(p.amount) || 0,
+      })),
+      "tolovlar",
+      "To‘lovlar",
+    );
+    toast.success("Excel yuklab olindi");
+  };
+
   return (
     <div className="px-4 py-6 sm:px-8 sm:py-8">
       <PageHeader
         title="To‘lovlar"
         description="Klinika kassasi va to‘lovlar tarixi."
-        actions={<button onClick={() => setCreating(true)} className="btn-primary"><Plus className="h-4 w-4" /> Yangi to‘lov</button>}
+        actions={
+          <div className="flex gap-2">
+            <button onClick={exportExcel} className="btn-ghost"><FileDown className="h-4 w-4" /> Excel</button>
+            <button onClick={() => setCreating(true)} className="btn-primary"><Plus className="h-4 w-4" /> Yangi to‘lov</button>
+          </div>
+        }
       />
 
       <div className="mb-6 grid gap-4 sm:grid-cols-3">

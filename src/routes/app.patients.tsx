@@ -4,9 +4,10 @@ import { useAuth } from "@/hooks/use-auth";
 import { supabase } from "@/integrations/supabase/client";
 import { PageHeader, EmptyState, Modal } from "@/components/page-header";
 import { fmtDate, fmtSum } from "@/lib/format";
-import { Plus, Pencil, Trash2, Search, Phone, BellRing } from "lucide-react";
+import { exportToExcel } from "@/lib/excel-export";
+import { Plus, Pencil, Trash2, Search, Phone, BellRing, FileDown } from "lucide-react";
 import { toast } from "sonner";
-import { TREATMENT_LABEL, REMINDER_DAYS_OPTIONS, type TreatmentType, type ReminderStatus } from "@/lib/reminders";
+import { TREATMENT_LABEL, REMINDER_STATUS_LABEL, REMINDER_DAYS_OPTIONS, type TreatmentType, type ReminderStatus } from "@/lib/reminders";
 
 export const Route = createFileRoute("/app/patients")({
   component: PatientsPage,
@@ -70,15 +71,45 @@ function PatientsPage() {
     void load();
   };
 
+  const exportExcel = () => {
+    if (!filtered.length) return toast.error("Eksport uchun bemor yo‘q");
+    exportToExcel(
+      filtered.map((p) => ({
+        "Ism": p.full_name,
+        "Telefon": p.phone,
+        "Tug‘ilgan sana": fmtDate(p.birth_date),
+        "Jinsi": p.gender === "male" ? "Erkak" : p.gender === "female" ? "Ayol" : "—",
+        "Manzil": p.address ?? "—",
+        "Allergiya": p.allergies ?? "—",
+        "Surunkali kasallik": p.medical_conditions ?? "—",
+        "Davolash turi": p.treatment_type ? TREATMENT_LABEL[p.treatment_type] : "—",
+        "Keyingi tashrif": fmtDate(p.next_visit_date),
+        "Eslatma holati": REMINDER_STATUS_LABEL[p.reminder_status],
+        "Qarz (so‘m)": Number(p.debt) || 0,
+        "Oxirgi tashrif": fmtDate(p.last_visit_at),
+        "Qo‘shilgan": fmtDate(p.created_at),
+        "Izoh": p.notes ?? "—",
+      })),
+      "bemorlar",
+      "Bemorlar",
+    );
+    toast.success("Excel yuklab olindi");
+  };
+
   return (
     <div className="px-4 py-6 sm:px-8 sm:py-8">
       <PageHeader
         title="Bemorlar"
         description="Bemor profillari, qidiruv va boshqaruv."
         actions={
-          <button onClick={() => setCreating(true)} className="btn-primary">
-            <Plus className="h-4 w-4" /> Yangi bemor
-          </button>
+          <div className="flex gap-2">
+            <button onClick={exportExcel} className="btn-ghost">
+              <FileDown className="h-4 w-4" /> Excel
+            </button>
+            <button onClick={() => setCreating(true)} className="btn-primary">
+              <Plus className="h-4 w-4" /> Yangi bemor
+            </button>
+          </div>
         }
       />
 

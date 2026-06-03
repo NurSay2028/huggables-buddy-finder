@@ -88,6 +88,7 @@ export const DEFAULT_CONTENT: LandingContent = {
     phone: "+998913808667",
     phone_display: "91 380 86 67",
     telegram_url: "https://teleg.one/janibek_saqtabaev",
+    instagram_url: "https://instagram.com/",
     email: "example@gmail.com",
     address: "Nukus shahri, Aeroport hududi. Ish vaqti: 24/7",
   },

@@ -102,9 +102,14 @@ function PatientsPage() {
         title="Bemorlar"
         description="Bemor profillari, qidiruv va boshqaruv."
         actions={
-          <button onClick={() => setCreating(true)} className="btn-primary">
-            <Plus className="h-4 w-4" /> Yangi bemor
-          </button>
+          <div className="flex gap-2">
+            <button onClick={exportExcel} className="btn-ghost">
+              <FileDown className="h-4 w-4" /> Excel
+            </button>
+            <button onClick={() => setCreating(true)} className="btn-primary">
+              <Plus className="h-4 w-4" /> Yangi bemor
+            </button>
+          </div>
         }
       />
 

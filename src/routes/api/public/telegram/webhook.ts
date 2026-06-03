@@ -95,7 +95,7 @@ export const Route = createFileRoute("/api/public/telegram/webhook")({
         if (!phoneOk) {
           await reply(
             chatId,
-            "Telefon raqami kodga mos kelmadi. Klinikada ro‘yxatdan o‘tgan raqamingizni yuboring.",
+            "Telefon nomeri kod penen sáykes kelmedi.\nKlinikada dizimnen ótken nomerińizdi jiberiń.",
           );
           return Response.json({ ok: true });
         }
@@ -107,7 +107,7 @@ export const Route = createFileRoute("/api/public/telegram/webhook")({
 
         await reply(
           chatId,
-          `Rahmat, ${(patient as { full_name: string }).full_name}! Telegram hisobingiz muvaffaqiyatli ulandi. Endi qabul eslatmalarini shu yerda olasiz. ✅`,
+          `Raxmet, ${(patient as { full_name: string }).full_name}! Telegram akkauntıńız tabıslı jalǵandı. Endi qabıllaw esletpelerin usı jerde alasız. ✅`,
         );
         return Response.json({ ok: true });
       },

@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type ChangeEvent, type RefObject } from "react";
 import { useAuth } from "@/hooks/use-auth";
 import { supabase } from "@/integrations/supabase/client";
 import { uploadAppImage } from "@/lib/image-upload";
@@ -276,5 +276,48 @@ function ProcForm({ tooth, patientId, clinicId, doctors, onClose, onSaved }: {
         </div>
       </form>
     </Modal>
+  );
+}
+
+function ImageUploadBox({
+  label,
+  value,
+  loading,
+  inputRef,
+  onPick,
+  onClear,
+}: {
+  label: string;
+  value: string;
+  loading: boolean;
+  inputRef: RefObject<HTMLInputElement | null>;
+  onPick: (e: ChangeEvent<HTMLInputElement>) => void;
+  onClear: () => void;
+}) {
+  return (
+    <div>
+      <span className="mb-1 block text-xs font-medium text-muted-foreground">{label}</span>
+      <div className="flex items-center gap-3">
+        <div className="grid h-20 w-20 place-items-center overflow-hidden rounded-xl border border-border bg-muted">
+          {value ? (
+            <img src={value} alt={label} className="h-full w-full object-cover" />
+          ) : (
+            <ImagePlus className="h-5 w-5 text-muted-foreground" />
+          )}
+        </div>
+        <div className="flex flex-col gap-2">
+          <input ref={inputRef} type="file" accept="image/*" className="hidden" onChange={onPick} />
+          <button type="button" onClick={() => inputRef.current?.click()} disabled={loading} className="btn-ghost">
+            {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <ImagePlus className="h-4 w-4" />}
+            {loading ? "Yuklanmoqda…" : "Yuklash"}
+          </button>
+          {value && (
+            <button type="button" onClick={onClear} className="inline-flex items-center gap-1 text-xs text-destructive hover:underline">
+              <X className="h-3 w-3" /> O‘chirish
+            </button>
+          )}
+        </div>
+      </div>
+    </div>
   );
 }

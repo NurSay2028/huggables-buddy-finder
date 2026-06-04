@@ -38,12 +38,12 @@ export function Doctor() {
               key={i}
               className="grid items-center gap-8 rounded-3xl bg-card p-6 shadow-card sm:p-8 lg:grid-cols-2"
             >
-              <div className="overflow-hidden rounded-2xl">
+              <div className="overflow-hidden rounded-2xl bg-muted">
                 <img
                   src={d.image || doctorDjoni}
                   alt={d.name}
                   loading="lazy"
-                  className="h-80 w-full object-cover object-top sm:h-96"
+                  className="h-auto w-full object-contain"
                 />
               </div>
 

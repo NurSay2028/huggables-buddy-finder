@@ -63,6 +63,7 @@ export const Route = createFileRoute("/")({
     ],
     links: [
       { rel: "canonical", href: "https://drjanibek.uz/" },
+      ...iconLinks,
     ],
     scripts: [
       {

@@ -197,7 +197,7 @@ function LandingEditorPage() {
                 <Text label="Ish vaqti" value={item.hours} onChange={(v) => update({ ...item, hours: v })} />
                 <Text label="Manzil" value={item.location} onChange={(v) => update({ ...item, location: v })} />
                 <Text label="Tugma matni" value={item.cta} onChange={(v) => update({ ...item, cta: v })} />
-                <Img label="Rasm" value={item.image} onChange={(v) => update({ ...item, image: v })} />
+                <Img label="Rasm" value={item.image} onChange={(v) => update({ ...item, image: v })} crop={false} />
               </>
             )}
           />
@@ -321,11 +321,14 @@ function Img({
   value,
   onChange,
   aspect = 4 / 3,
+  crop = true,
 }: {
   label: string;
   value: string;
   onChange: (v: string) => void;
   aspect?: number;
+  /** When false, the image is uploaded exactly as-is (no cropping). */
+  crop?: boolean;
 }) {
   const { clinic } = useAuth();
   const inputRef = useRef<HTMLInputElement>(null);
@@ -333,6 +336,20 @@ function Img({
   const [cropFile, setCropFile] = useState<File | null>(null);
 
   const pick = () => inputRef.current?.click();
+
+  const uploadFile = async (file: File) => {
+    if (!clinic) return;
+    setUploading(true);
+    try {
+      const url = await uploadAppImage(file, clinic.id, { bucket: "landing", folder: "landing" });
+      onChange(url);
+      toast.success("Rasm yuklandi");
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Yuklashda xatolik");
+    } finally {
+      setUploading(false);
+    }
+  };
 
   const onFile = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -350,7 +367,11 @@ function Img({
       toast.error("Klinika topilmadi. Qayta kirib ko‘ring.");
       return;
     }
-    setCropFile(file);
+    if (crop) {
+      setCropFile(file);
+    } else {
+      void uploadFile(file);
+    }
   };
 
   const onCropped = async (file: File) => {

@@ -183,7 +183,7 @@ function DoctorForm({ doctor, clinicId, onClose, onSaved }: {
           <div className="flex items-center gap-3">
             <div className="grid h-20 w-20 place-items-center overflow-hidden rounded-xl border border-border bg-muted">
               {form.photo_url ? (
-                <img src={form.photo_url} alt="Shifokor rasmi" className="h-full w-full object-cover" />
+                <img src={form.photo_url} alt="Shifokor rasmi" className="h-full w-full object-contain" />
               ) : (
                 <UserCog className="h-6 w-6 text-muted-foreground" />
               )}

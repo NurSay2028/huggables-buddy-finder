@@ -18,7 +18,23 @@ export const Route = createFileRoute("/")({
     const { json } = await getLandingContent();
     return { contentJson: json };
   },
-  head: () => ({
+  head: ({ loaderData }) => {
+    let logoUrl = "";
+    try {
+      const parsed = loaderData?.contentJson ? JSON.parse(loaderData.contentJson) : null;
+      const l = parsed?.brand?.logo;
+      if (typeof l === "string" && l.startsWith("http")) logoUrl = l;
+    } catch {
+      logoUrl = "";
+    }
+    const iconLinks = logoUrl
+      ? [
+          { rel: "icon", href: logoUrl },
+          { rel: "shortcut icon", href: logoUrl },
+          { rel: "apple-touch-icon", href: logoUrl },
+        ]
+      : [];
+    return {
     meta: [
       { title: "Dr. Janibek's Clinic | Dental Clinic in Nukus" },
       {

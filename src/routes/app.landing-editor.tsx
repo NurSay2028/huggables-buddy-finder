@@ -197,7 +197,7 @@ function LandingEditorPage() {
                 <Text label="Ish vaqti" value={item.hours} onChange={(v) => update({ ...item, hours: v })} />
                 <Text label="Manzil" value={item.location} onChange={(v) => update({ ...item, location: v })} />
                 <Text label="Tugma matni" value={item.cta} onChange={(v) => update({ ...item, cta: v })} />
-                <Img label="Rasm" value={item.image} onChange={(v) => update({ ...item, image: v })} />
+                <Img label="Rasm" value={item.image} onChange={(v) => update({ ...item, image: v })} crop={false} />
               </>
             )}
           />

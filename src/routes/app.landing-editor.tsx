@@ -18,6 +18,7 @@ export const Route = createFileRoute("/app/landing-editor")({
 
 // image fields that must be reset to "" if not an uploaded URL (so defaults win)
 const IMAGE_PATHS: [keyof LandingContent, string][] = [
+  ["brand", "logo"],
   ["hero", "image1"],
   ["hero", "image2"],
   ["hero", "image3"],

@@ -90,7 +90,7 @@ export function Footer() {
         <div className="border-t border-primary-foreground/20 py-6 text-center text-sm opacity-80">
           <p>{c.footer.copyright}</p>
           <p className="mt-2 opacity-90">
-            Bu sayt{" "}
+            Bul sayt{" "}
             <a
               href="https://keta.uz"
               target="_blank"

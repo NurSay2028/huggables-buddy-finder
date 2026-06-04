@@ -16,9 +16,17 @@ export function Header() {
 
   const Logo = () => (
     <a href="#home" className="flex items-center gap-2">
-      <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary text-primary-foreground font-extrabold text-lg shadow-card">
-        {c.brand.logo_text}
-      </div>
+      {c.brand.logo ? (
+        <img
+          src={c.brand.logo}
+          alt={c.brand.name}
+          className="h-10 w-10 rounded-xl object-contain shadow-card"
+        />
+      ) : (
+        <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary text-primary-foreground font-extrabold text-lg shadow-card">
+          {c.brand.logo_text}
+        </div>
+      )}
       <span className="text-xl font-extrabold tracking-tight text-foreground">
         {c.brand.name}
       </span>

@@ -18,6 +18,7 @@ export const Route = createFileRoute("/app/landing-editor")({
 
 // image fields that must be reset to "" if not an uploaded URL (so defaults win)
 const IMAGE_PATHS: [keyof LandingContent, string][] = [
+  ["brand", "logo"],
   ["hero", "image1"],
   ["hero", "image2"],
   ["hero", "image3"],
@@ -117,6 +118,7 @@ function LandingEditorPage() {
         <Section title="Brend va aloqa">
           <Text label="Klinika nomi" value={c.brand.name} onChange={(v) => setField("brand", "name", v)} />
           <Text label="Logotip matni (qisqa)" value={c.brand.logo_text} onChange={(v) => setField("brand", "logo_text", v)} />
+          <Img label="Logotip rasmi (sayt va Google ikonkasi)" value={c.brand.logo} onChange={(v) => setField("brand", "logo", v)} crop={false} />
           <Text label="Telefon (link uchun, masalan +998913808667)" value={c.contact.phone} onChange={(v) => setField("contact", "phone", v)} />
           <Text label="Telefon (ko‘rinish)" value={c.contact.phone_display} onChange={(v) => setField("contact", "phone_display", v)} />
           <Text label="Telegram havola" value={c.contact.telegram_url} onChange={(v) => setField("contact", "telegram_url", v)} />

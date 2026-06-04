@@ -20,11 +20,11 @@ export const Route = createFileRoute("/")({
   },
   head: () => ({
     meta: [
-      { title: "Djoni Dentist — Nukusdagi stomatologiya | 24/7" },
+      { title: "Dr. Janibek's Clinic | Dental Clinic in Nukus" },
       {
         name: "description",
         content:
-          "Djoni Dentist — Nukus shahridagi zamonaviy stomatologiya. Tish davolash, breket, protezlash va oqartirish. 24/7 yordam. Tel: 91 380 86 67",
+          "Dr. Janibek's Clinic - Nókistegi stomatologiyalıq klinika. Tislerdi emlew, breket sistemaları, protezlew hám awız boslıǵı salamatlıǵın tiklew boyınsha xızmetler.",
       },
       { property: "og:title", content: "Djoni Dentist — Nukusdagi stomatologiya" },
       {

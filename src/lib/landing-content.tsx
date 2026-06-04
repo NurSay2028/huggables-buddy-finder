@@ -83,7 +83,7 @@ export interface LandingContent {
 }
 
 export const DEFAULT_CONTENT: LandingContent = {
-  brand: { name: "Djoni Dentist", logo_text: "DD" },
+  brand: { name: "Djoni Dentist", logo_text: "DD", logo: "" },
   contact: {
     phone: "+998913808667",
     phone_display: "91 380 86 67",

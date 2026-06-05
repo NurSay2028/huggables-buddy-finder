@@ -229,10 +229,22 @@ function PaymentForm({ patients, clinicId, onClose, onSaved }: {
       <form onSubmit={save} className="space-y-3">
         <label className="block">
           <span className="mb-1 block text-xs font-medium text-muted-foreground">Bemor *</span>
+          <div className="relative mb-2">
+            <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+            <input
+              className="input pl-9"
+              placeholder="Bemorni qidirish…"
+              value={patientQuery}
+              onChange={(e) => setPatientQuery(e.target.value)}
+            />
+          </div>
           <select className="input" value={form.patient_id} onChange={(e) => setForm({ ...form, patient_id: e.target.value })} required>
             <option value="">— Tanlang —</option>
-            {patients.map((p) => <option key={p.id} value={p.id}>{p.full_name}</option>)}
+            {filteredPatients.map((p) => <option key={p.id} value={p.id}>{p.full_name}</option>)}
           </select>
+          {patientQuery && filteredPatients.length === 0 && (
+            <p className="mt-1 text-xs text-muted-foreground">Bemor topilmadi</p>
+          )}
         </label>
         <label className="block">
           <span className="mb-1 block text-xs font-medium text-muted-foreground">Summa (so‘m) *</span>

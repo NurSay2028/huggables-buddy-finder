@@ -29,10 +29,7 @@ function LoginPage() {
   }, [loading, session, isSuperAdmin, navigate]);
 
   const goAfterLogin = async (userId: string) => {
-    const { data } = await supabase
-      .from("user_roles")
-      .select("role")
-      .eq("user_id", userId);
+    const { data } = await supabase.from("user_roles").select("role").eq("user_id", userId);
     const hasSuperAdmin = (data ?? []).some((row) => row.role === "super_admin");
     navigate({ to: hasSuperAdmin ? "/admin" : "/app" });
   };

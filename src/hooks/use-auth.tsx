@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
+import { createContext, useContext, useEffect, useRef, useState, type ReactNode } from "react";
 import type { Session, User } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -68,20 +68,30 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [roles, setRoles] = useState<AppRole[]>([]);
   const [clinic, setClinic] = useState<ClinicLite | null>(null);
   const [isSuperAdmin, setIsSuperAdmin] = useState(false);
+  const hydrateSeq = useRef(0);
 
   const hydrate = async (s: Session | null) => {
-    setSession(s);
-    setUser(s?.user ?? null);
+    const seq = hydrateSeq.current + 1;
+    hydrateSeq.current = seq;
+
+    let nextRoles: AppRole[] = [];
+    let nextClinic: ClinicLite | null = null;
+    let nextIsSuperAdmin = false;
+
     if (s?.user) {
       const m = await loadMembership(s.user.id);
-      setRoles(m.roles);
-      setClinic(m.clinic);
-      setIsSuperAdmin(m.isSuperAdmin);
-    } else {
-      setRoles([]);
-      setClinic(null);
-      setIsSuperAdmin(false);
+      nextRoles = m.roles;
+      nextClinic = m.clinic;
+      nextIsSuperAdmin = m.isSuperAdmin;
     }
+
+    if (seq !== hydrateSeq.current) return;
+
+    setSession(s);
+    setUser(s?.user ?? null);
+    setRoles(nextRoles);
+    setClinic(nextClinic);
+    setIsSuperAdmin(nextIsSuperAdmin);
     setLoading(false);
   };
 

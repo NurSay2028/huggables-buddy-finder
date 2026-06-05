@@ -193,6 +193,13 @@ function PaymentForm({ patients, clinicId, onClose, onSaved }: {
     reduceDebt: true,
   });
   const [saving, setSaving] = useState(false);
+  const [patientQuery, setPatientQuery] = useState("");
+
+  const filteredPatients = useMemo(() => {
+    const q = patientQuery.trim().toLowerCase();
+    if (!q) return patients;
+    return patients.filter((p) => p.full_name.toLowerCase().includes(q));
+  }, [patients, patientQuery]);
 
   const save = async (e: React.FormEvent) => {
     e.preventDefault();

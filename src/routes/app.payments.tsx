@@ -122,10 +122,13 @@ function PaymentsPage() {
       </div>
 
       <div className="card overflow-hidden">
-        {!rows ? (
+        {!filtered ? (
           <div className="p-8 text-center text-sm text-muted-foreground">Yuklanmoqda…</div>
-        ) : rows.length === 0 ? (
-          <EmptyState title="To‘lovlar yo‘q" description="Birinchi to‘lovni qo‘shing." />
+        ) : filtered.length === 0 ? (
+          <EmptyState
+            title={query ? "Hech narsa topilmadi" : "To‘lovlar yo‘q"}
+            description={query ? "Boshqa so‘z bilan qidirib ko‘ring." : "Birinchi to‘lovni qo‘shing."}
+          />
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
@@ -140,7 +143,7 @@ function PaymentsPage() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-border">
-                {rows.map((p) => (
+                {filtered.map((p) => (
                   <tr key={p.id} className="hover:bg-muted/30">
                     <td className="px-4 py-3 text-muted-foreground">{fmtDateTime(p.created_at)}</td>
                     <td className="px-4 py-3 font-medium">{p.patients?.full_name ?? "—"}</td>

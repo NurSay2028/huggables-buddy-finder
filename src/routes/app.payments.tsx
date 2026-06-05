@@ -61,9 +61,20 @@ function PaymentsPage() {
     void load();
   };
 
+  const filtered = useMemo(() => {
+    if (!rows) return null;
+    const q = query.trim().toLowerCase();
+    if (!q) return rows;
+    return rows.filter((r) =>
+      (r.patients?.full_name ?? "").toLowerCase().includes(q) ||
+      (r.description ?? "").toLowerCase().includes(q) ||
+      METHOD_LABEL[r.method].toLowerCase().includes(q),
+    );
+  }, [rows, query]);
+
   const today = new Date(); today.setHours(0, 0, 0, 0);
-  const todayTotal = (rows ?? []).filter((r) => new Date(r.created_at) >= today).reduce((s, r) => s + Number(r.amount), 0);
-  const totalAll = (rows ?? []).reduce((s, r) => s + Number(r.amount), 0);
+  const todayTotal = (filtered ?? []).filter((r) => new Date(r.created_at) >= today).reduce((s, r) => s + Number(r.amount), 0);
+  const totalAll = (filtered ?? []).reduce((s, r) => s + Number(r.amount), 0);
 
   const exportExcel = () => {
     if (!rows?.length) return toast.error("Eksport uchun to‘lov yo‘q");

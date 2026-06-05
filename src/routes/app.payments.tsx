@@ -194,12 +194,19 @@ function PaymentForm({ patients, clinicId, onClose, onSaved }: {
   });
   const [saving, setSaving] = useState(false);
   const [patientQuery, setPatientQuery] = useState("");
+  const [showList, setShowList] = useState(false);
 
   const filteredPatients = useMemo(() => {
     const q = patientQuery.trim().toLowerCase();
     if (!q) return patients;
     return patients.filter((p) => p.full_name.toLowerCase().includes(q));
   }, [patients, patientQuery]);
+
+  const selectPatient = (p: { id: string; full_name: string }) => {
+    setForm((f) => ({ ...f, patient_id: p.id }));
+    setPatientQuery(p.full_name);
+    setShowList(false);
+  };
 
   const save = async (e: React.FormEvent) => {
     e.preventDefault();

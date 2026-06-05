@@ -108,7 +108,17 @@ function PaymentsPage() {
       <div className="mb-6 grid gap-4 sm:grid-cols-3">
         <Stat label="Bugungi tushum" value={fmtSum(todayTotal)} />
         <Stat label="Jami (oxirgi 200)" value={fmtSum(totalAll)} />
-        <Stat label="To‘lovlar soni" value={String(rows?.length ?? 0)} />
+        <Stat label="To‘lovlar soni" value={String(filtered?.length ?? 0)} />
+      </div>
+
+      <div className="relative mb-4 max-w-md">
+        <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+        <input
+          className="input pl-9"
+          placeholder="Bemor, izoh yoki usul bo‘yicha qidirish…"
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+        />
       </div>
 
       <div className="card overflow-hidden">

@@ -19,7 +19,7 @@ export const Route = createFileRoute("/login")({
 
 function LoginPage() {
   const navigate = useNavigate();
-  const { session, loading, isSuperAdmin } = useAuth();
+  const { session, loading, isSuperAdmin, refresh } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [submitting, setSubmitting] = useState(false);
@@ -41,11 +41,13 @@ function LoginPage() {
     e.preventDefault();
     setSubmitting(true);
     const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-    setSubmitting(false);
     if (error) {
+      setSubmitting(false);
       toast.error("Email yoki parol noto‘g‘ri");
       return;
     }
+    await refresh();
+    setSubmitting(false);
     toast.success("Xush kelibsiz");
     if (data.user) await goAfterLogin(data.user.id);
   };

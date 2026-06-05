@@ -19,7 +19,7 @@ export const Route = createFileRoute("/login")({
 
 function LoginPage() {
   const navigate = useNavigate();
-  const { session, loading, isSuperAdmin } = useAuth();
+  const { session, loading, isSuperAdmin, refresh } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [submitting, setSubmitting] = useState(false);
@@ -29,10 +29,7 @@ function LoginPage() {
   }, [loading, session, isSuperAdmin, navigate]);
 
   const goAfterLogin = async (userId: string) => {
-    const { data } = await supabase
-      .from("user_roles")
-      .select("role")
-      .eq("user_id", userId);
+    const { data } = await supabase.from("user_roles").select("role").eq("user_id", userId);
     const hasSuperAdmin = (data ?? []).some((row) => row.role === "super_admin");
     navigate({ to: hasSuperAdmin ? "/admin" : "/app" });
   };
@@ -41,11 +38,13 @@ function LoginPage() {
     e.preventDefault();
     setSubmitting(true);
     const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-    setSubmitting(false);
     if (error) {
+      setSubmitting(false);
       toast.error("Email yoki parol noto‘g‘ri");
       return;
     }
+    await refresh();
+    setSubmitting(false);
     toast.success("Xush kelibsiz");
     if (data.user) await goAfterLogin(data.user.id);
   };

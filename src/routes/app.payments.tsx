@@ -31,6 +31,7 @@ function PaymentsPage() {
   const { clinic } = useAuth();
   const [rows, setRows] = useState<Payment[] | null>(null);
   const [creating, setCreating] = useState(false);
+  const [query, setQuery] = useState("");
   const [patients, setPatients] = useState<{ id: string; full_name: string }[]>([]);
 
   const load = async () => {

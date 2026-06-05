@@ -236,22 +236,40 @@ function PaymentForm({ patients, clinicId, onClose, onSaved }: {
       <form onSubmit={save} className="space-y-3">
         <label className="block">
           <span className="mb-1 block text-xs font-medium text-muted-foreground">Bemor *</span>
-          <div className="relative mb-2">
+          <div className="relative">
             <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
             <input
               className="input pl-9"
-              placeholder="Bemorni qidirish…"
+              placeholder="Bemor ismini yozing…"
               value={patientQuery}
-              onChange={(e) => setPatientQuery(e.target.value)}
+              onChange={(e) => {
+                setPatientQuery(e.target.value);
+                setShowList(true);
+                setForm((f) => ({ ...f, patient_id: "" }));
+              }}
+              onFocus={() => setShowList(true)}
             />
+            {showList && (
+              <div className="absolute z-20 mt-1 max-h-56 w-full overflow-y-auto rounded-lg border border-border bg-card shadow-lg">
+                {filteredPatients.length === 0 ? (
+                  <div className="px-3 py-2 text-sm text-muted-foreground">Bemor topilmadi</div>
+                ) : (
+                  filteredPatients.map((p) => (
+                    <button
+                      type="button"
+                      key={p.id}
+                      onClick={() => selectPatient(p)}
+                      className={`block w-full px-3 py-2 text-left text-sm hover:bg-muted/60 ${
+                        form.patient_id === p.id ? "bg-primary-soft text-primary" : ""
+                      }`}
+                    >
+                      {p.full_name}
+                    </button>
+                  ))
+                )}
+              </div>
+            )}
           </div>
-          <select className="input" value={form.patient_id} onChange={(e) => setForm({ ...form, patient_id: e.target.value })} required>
-            <option value="">— Tanlang —</option>
-            {filteredPatients.map((p) => <option key={p.id} value={p.id}>{p.full_name}</option>)}
-          </select>
-          {patientQuery && filteredPatients.length === 0 && (
-            <p className="mt-1 text-xs text-muted-foreground">Bemor topilmadi</p>
-          )}
         </label>
         <label className="block">
           <span className="mb-1 block text-xs font-medium text-muted-foreground">Summa (so‘m) *</span>

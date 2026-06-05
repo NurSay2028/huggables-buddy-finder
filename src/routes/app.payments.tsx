@@ -1,11 +1,11 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useAuth } from "@/hooks/use-auth";
 import { supabase } from "@/integrations/supabase/client";
 import { PageHeader, EmptyState, Modal } from "@/components/page-header";
 import { fmtDateTime, fmtSum } from "@/lib/format";
 import { exportToExcel } from "@/lib/excel-export";
-import { Plus, Trash2, Wallet, FileDown } from "lucide-react";
+import { Plus, Trash2, Wallet, FileDown, Search } from "lucide-react";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/app/payments")({
@@ -31,6 +31,7 @@ function PaymentsPage() {
   const { clinic } = useAuth();
   const [rows, setRows] = useState<Payment[] | null>(null);
   const [creating, setCreating] = useState(false);
+  const [query, setQuery] = useState("");
   const [patients, setPatients] = useState<{ id: string; full_name: string }[]>([]);
 
   const load = async () => {
@@ -60,9 +61,20 @@ function PaymentsPage() {
     void load();
   };
 
+  const filtered = useMemo(() => {
+    if (!rows) return null;
+    const q = query.trim().toLowerCase();
+    if (!q) return rows;
+    return rows.filter((r) =>
+      (r.patients?.full_name ?? "").toLowerCase().includes(q) ||
+      (r.description ?? "").toLowerCase().includes(q) ||
+      METHOD_LABEL[r.method].toLowerCase().includes(q),
+    );
+  }, [rows, query]);
+
   const today = new Date(); today.setHours(0, 0, 0, 0);
-  const todayTotal = (rows ?? []).filter((r) => new Date(r.created_at) >= today).reduce((s, r) => s + Number(r.amount), 0);
-  const totalAll = (rows ?? []).reduce((s, r) => s + Number(r.amount), 0);
+  const todayTotal = (filtered ?? []).filter((r) => new Date(r.created_at) >= today).reduce((s, r) => s + Number(r.amount), 0);
+  const totalAll = (filtered ?? []).reduce((s, r) => s + Number(r.amount), 0);
 
   const exportExcel = () => {
     if (!rows?.length) return toast.error("Eksport uchun to‘lov yo‘q");
@@ -96,14 +108,27 @@ function PaymentsPage() {
       <div className="mb-6 grid gap-4 sm:grid-cols-3">
         <Stat label="Bugungi tushum" value={fmtSum(todayTotal)} />
         <Stat label="Jami (oxirgi 200)" value={fmtSum(totalAll)} />
-        <Stat label="To‘lovlar soni" value={String(rows?.length ?? 0)} />
+        <Stat label="To‘lovlar soni" value={String(filtered?.length ?? 0)} />
+      </div>
+
+      <div className="relative mb-4 max-w-md">
+        <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+        <input
+          className="input pl-9"
+          placeholder="Bemor, izoh yoki usul bo‘yicha qidirish…"
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+        />
       </div>
 
       <div className="card overflow-hidden">
-        {!rows ? (
+        {!filtered ? (
           <div className="p-8 text-center text-sm text-muted-foreground">Yuklanmoqda…</div>
-        ) : rows.length === 0 ? (
-          <EmptyState title="To‘lovlar yo‘q" description="Birinchi to‘lovni qo‘shing." />
+        ) : filtered.length === 0 ? (
+          <EmptyState
+            title={query ? "Hech narsa topilmadi" : "To‘lovlar yo‘q"}
+            description={query ? "Boshqa so‘z bilan qidirib ko‘ring." : "Birinchi to‘lovni qo‘shing."}
+          />
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
@@ -118,7 +143,7 @@ function PaymentsPage() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-border">
-                {rows.map((p) => (
+                {filtered.map((p) => (
                   <tr key={p.id} className="hover:bg-muted/30">
                     <td className="px-4 py-3 text-muted-foreground">{fmtDateTime(p.created_at)}</td>
                     <td className="px-4 py-3 font-medium">{p.patients?.full_name ?? "—"}</td>

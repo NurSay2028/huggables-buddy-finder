@@ -1,4 +1,18 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { timingSafeEqual } from "crypto";
+
+function cronAuthorized(request: Request): boolean {
+  const expected =
+    process.env.SUPABASE_PUBLISHABLE_KEY ?? process.env.SUPABASE_ANON_KEY ?? "";
+  if (!expected) return false;
+  const got =
+    request.headers.get("apikey") ??
+    request.headers.get("authorization")?.replace(/^Bearer\s+/i, "") ??
+    "";
+  const a = Buffer.from(got);
+  const b = Buffer.from(expected);
+  return a.length === b.length && timingSafeEqual(a, b);
+}
 
 async function processScheduled() {
   const { supabaseAdmin } = await import("@/integrations/supabase/client.server");

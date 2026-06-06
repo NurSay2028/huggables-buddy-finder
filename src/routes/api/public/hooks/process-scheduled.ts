@@ -60,8 +60,14 @@ async function processScheduled() {
 export const Route = createFileRoute("/api/public/hooks/process-scheduled")({
   server: {
     handlers: {
-      POST: async () => Response.json(await processScheduled()),
-      GET: async () => Response.json(await processScheduled()),
+      POST: async ({ request }) => {
+        if (!cronAuthorized(request)) return new Response("Unauthorized", { status: 401 });
+        return Response.json(await processScheduled());
+      },
+      GET: async ({ request }) => {
+        if (!cronAuthorized(request)) return new Response("Unauthorized", { status: 401 });
+        return Response.json(await processScheduled());
+      },
     },
   },
 });

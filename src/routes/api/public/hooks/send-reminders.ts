@@ -93,8 +93,14 @@ async function sendReminders() {
 export const Route = createFileRoute("/api/public/hooks/send-reminders")({
   server: {
     handlers: {
-      POST: async () => Response.json(await sendReminders()),
-      GET: async () => Response.json(await sendReminders()),
+      POST: async ({ request }) => {
+        if (!cronAuthorized(request)) return new Response("Unauthorized", { status: 401 });
+        return Response.json(await sendReminders());
+      },
+      GET: async ({ request }) => {
+        if (!cronAuthorized(request)) return new Response("Unauthorized", { status: 401 });
+        return Response.json(await sendReminders());
+      },
     },
   },
 });

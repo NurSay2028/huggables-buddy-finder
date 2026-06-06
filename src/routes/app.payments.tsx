@@ -33,6 +33,7 @@ type Payment = {
 };
 
 type LookupDoctor = { id: string; full_name: string; salary_percentage: number };
+type LookupPatient = { id: string; full_name: string; phone: string | null; debt: number | null };
 
 function PaymentsPage() {
   const { clinic } = useAuth();

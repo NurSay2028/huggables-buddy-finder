@@ -1,5 +1,19 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { timingSafeEqual } from "crypto";
 import { renderTemplate, DEFAULT_TEMPLATE_BODY } from "@/lib/telegram-templates";
+
+function cronAuthorized(request: Request): boolean {
+  const expected =
+    process.env.SUPABASE_PUBLISHABLE_KEY ?? process.env.SUPABASE_ANON_KEY ?? "";
+  if (!expected) return false;
+  const got =
+    request.headers.get("apikey") ??
+    request.headers.get("authorization")?.replace(/^Bearer\s+/i, "") ??
+    "";
+  const a = Buffer.from(got);
+  const b = Buffer.from(expected);
+  return a.length === b.length && timingSafeEqual(a, b);
+}
 
 const TREATMENT_LABEL: Record<string, string> = {
   braces: "Breket",

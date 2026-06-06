@@ -209,7 +209,7 @@ function Stat({ label, value }: { label: string; value: string }) {
 }
 
 function PaymentForm({ patients, doctors, clinicId, onClose, onSaved }: {
-  patients: { id: string; full_name: string }[];
+  patients: LookupPatient[];
   doctors: LookupDoctor[];
   clinicId: string;
   onClose: () => void;

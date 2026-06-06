@@ -479,9 +479,13 @@ export type Database = {
           amount: number
           appointment_id: string | null
           clinic_id: string
+          clinic_share: number
           created_at: string
           created_by: string | null
           description: string | null
+          doctor_id: string | null
+          doctor_percentage: number
+          doctor_share: number
           id: string
           method: Database["public"]["Enums"]["payment_method"]
           patient_id: string
@@ -490,9 +494,13 @@ export type Database = {
           amount: number
           appointment_id?: string | null
           clinic_id: string
+          clinic_share?: number
           created_at?: string
           created_by?: string | null
           description?: string | null
+          doctor_id?: string | null
+          doctor_percentage?: number
+          doctor_share?: number
           id?: string
           method: Database["public"]["Enums"]["payment_method"]
           patient_id: string
@@ -501,9 +509,13 @@ export type Database = {
           amount?: number
           appointment_id?: string | null
           clinic_id?: string
+          clinic_share?: number
           created_at?: string
           created_by?: string | null
           description?: string | null
+          doctor_id?: string | null
+          doctor_percentage?: number
+          doctor_share?: number
           id?: string
           method?: Database["public"]["Enums"]["payment_method"]
           patient_id?: string
@@ -521,6 +533,13 @@ export type Database = {
             columns: ["clinic_id"]
             isOneToOne: false
             referencedRelation: "clinics"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "payments_doctor_id_fkey"
+            columns: ["doctor_id"]
+            isOneToOne: false
+            referencedRelation: "doctors"
             referencedColumns: ["id"]
           },
           {

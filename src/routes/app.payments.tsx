@@ -33,13 +33,14 @@ type Payment = {
 };
 
 type LookupDoctor = { id: string; full_name: string; salary_percentage: number };
+type LookupPatient = { id: string; full_name: string; phone: string | null; debt: number | null };
 
 function PaymentsPage() {
   const { clinic } = useAuth();
   const [rows, setRows] = useState<Payment[] | null>(null);
   const [creating, setCreating] = useState(false);
   const [query, setQuery] = useState("");
-  const [patients, setPatients] = useState<{ id: string; full_name: string }[]>([]);
+  const [patients, setPatients] = useState<LookupPatient[]>([]);
   const [doctors, setDoctors] = useState<LookupDoctor[]>([]);
 
   const load = async () => {
@@ -57,8 +58,8 @@ function PaymentsPage() {
   useEffect(() => {
     void load();
     if (clinic) {
-      supabase.from("patients").select("id,full_name").eq("clinic_id", clinic.id).order("full_name")
-        .then(({ data }) => setPatients((data ?? []) as { id: string; full_name: string }[]));
+      supabase.from("patients").select("id,full_name,phone,debt").eq("clinic_id", clinic.id).order("full_name")
+        .then(({ data }) => setPatients((data ?? []) as LookupPatient[]));
       supabase.from("doctors").select("id,full_name,salary_percentage").eq("clinic_id", clinic.id).eq("active", true).order("full_name")
         .then(({ data }) => setDoctors((data ?? []) as LookupDoctor[]));
     }
@@ -208,7 +209,7 @@ function Stat({ label, value }: { label: string; value: string }) {
 }
 
 function PaymentForm({ patients, doctors, clinicId, onClose, onSaved }: {
-  patients: { id: string; full_name: string }[];
+  patients: LookupPatient[];
   doctors: LookupDoctor[];
   clinicId: string;
   onClose: () => void;
@@ -233,11 +234,16 @@ function PaymentForm({ patients, doctors, clinicId, onClose, onSaved }: {
     return patients.filter((p) => p.full_name.toLowerCase().includes(q));
   }, [patients, patientQuery]);
 
-  const selectPatient = (p: { id: string; full_name: string }) => {
+  const selectPatient = (p: LookupPatient) => {
     setForm((f) => ({ ...f, patient_id: p.id }));
     setPatientQuery(p.full_name);
     setShowList(false);
   };
+
+  const selectedPatient = useMemo(
+    () => patients.find((p) => p.id === form.patient_id) ?? null,
+    [patients, form.patient_id],
+  );
 
   const selectDoctor = (id: string) => {
     const doc = doctors.find((d) => d.id === id);
@@ -318,6 +324,24 @@ function PaymentForm({ patients, doctors, clinicId, onClose, onSaved }: {
             )}
           </div>
         </label>
+
+        {selectedPatient && (
+          <div className="rounded-lg border border-border bg-muted/40 p-3 text-sm">
+            <div className="font-medium">{selectedPatient.full_name}</div>
+            <div className="mt-1 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs">
+              <span className="text-muted-foreground">
+                📞 {selectedPatient.phone || "Telefon yo‘q"}
+              </span>
+              {Number(selectedPatient.debt) > 0 ? (
+                <span className="font-medium text-destructive">
+                  Qarz: {fmtSum(selectedPatient.debt)}
+                </span>
+              ) : (
+                <span className="text-muted-foreground">Qarz yo‘q</span>
+              )}
+            </div>
+          </div>
+        )}
 
         <label className="block">
           <span className="mb-1 block text-xs font-medium text-muted-foreground">Shifokor *</span>

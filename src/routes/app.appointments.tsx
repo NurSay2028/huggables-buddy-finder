@@ -3,7 +3,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useAuth } from "@/hooks/use-auth";
 import { supabase } from "@/integrations/supabase/client";
 import { PageHeader, EmptyState, Modal } from "@/components/page-header";
-import { fmtDateTime, fmtTime, toLocalInput } from "@/lib/format";
+import { fmtDateTime, fmtTime } from "@/lib/format";
 import { Plus, Pencil, Trash2, Calendar, ChevronLeft, ChevronRight } from "lucide-react";
 import { toast } from "sonner";
 
@@ -38,8 +38,17 @@ type Appt = {
   doctors: { full_name: string } | null;
 };
 
-type LookupPatient = { id: string; full_name: string; phone: string };
 type LookupDoctor = { id: string; full_name: string };
+
+// Local-safe helpers — avoid timezone shifts when parsing/formatting dates.
+const ymd = (d: Date) =>
+  `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+const hm = (d: Date) =>
+  `${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`;
+const parseYmd = (s: string) => {
+  const [y, m, d] = s.split("-").map(Number);
+  return new Date(y, (m || 1) - 1, d || 1);
+};
 
 function AppointmentsPage() {
   const { clinic } = useAuth();
@@ -47,14 +56,15 @@ function AppointmentsPage() {
   const [day, setDay] = useState(() => new Date());
   const [editing, setEditing] = useState<Appt | null>(null);
   const [creating, setCreating] = useState(false);
-  const [patients, setPatients] = useState<LookupPatient[]>([]);
   const [doctors, setDoctors] = useState<LookupDoctor[]>([]);
 
+  // Local-day boundaries converted to UTC ISO for the DB filter.
   const dayStart = useMemo(() => { const d = new Date(day); d.setHours(0, 0, 0, 0); return d; }, [day]);
   const dayEnd = useMemo(() => { const d = new Date(day); d.setHours(23, 59, 59, 999); return d; }, [day]);
 
   const load = async () => {
     if (!clinic) return;
+    setRows(null);
     const { data, error } = await supabase
       .from("appointments")
       .select("*, patients(full_name,phone), doctors(full_name)")
@@ -66,18 +76,20 @@ function AppointmentsPage() {
     setRows(data as Appt[]);
   };
 
-  const loadLookups = async () => {
+  const loadDoctors = async () => {
     if (!clinic) return;
-    const [{ data: p }, { data: d }] = await Promise.all([
-      supabase.from("patients").select("id,full_name,phone").eq("clinic_id", clinic.id).order("full_name"),
-      supabase.from("doctors").select("id,full_name").eq("clinic_id", clinic.id).eq("active", true).order("full_name"),
-    ]);
-    setPatients((p ?? []) as LookupPatient[]);
-    setDoctors((d ?? []) as LookupDoctor[]);
+    const { data, error } = await supabase
+      .from("doctors")
+      .select("id,full_name")
+      .eq("clinic_id", clinic.id)
+      .eq("active", true)
+      .order("full_name");
+    if (error) return toast.error(error.message);
+    setDoctors((data ?? []) as LookupDoctor[]);
   };
 
   useEffect(() => { void load(); }, [clinic?.id, dayStart.getTime()]);
-  useEffect(() => { void loadLookups(); }, [clinic?.id]);
+  useEffect(() => { void loadDoctors(); }, [clinic?.id]);
 
   const setStatus = async (id: string, status: Status) => {
     const { error } = await supabase.from("appointments").update({ status }).eq("id", id);
@@ -95,11 +107,13 @@ function AppointmentsPage() {
 
   const shift = (n: number) => { const d = new Date(day); d.setDate(d.getDate() + n); setDay(d); };
 
+  const isToday = ymd(day) === ymd(new Date());
+
   return (
     <div className="px-4 py-6 sm:px-8 sm:py-8">
       <PageHeader
         title="Qabullar"
-        description="Kunlik qabullar jadvali."
+        description="Avval qabul yarating — bemor avtomatik ro‘yxatga qo‘shiladi."
         actions={
           <button onClick={() => setCreating(true)} className="btn-primary">
             <Plus className="h-4 w-4" /> Yangi qabul
@@ -110,13 +124,13 @@ function AppointmentsPage() {
       <div className="card overflow-hidden">
         <div className="flex flex-wrap items-center gap-2 border-b border-border p-4">
           <button onClick={() => shift(-1)} className="btn-ghost h-9 px-2"><ChevronLeft className="h-4 w-4" /></button>
-          <button onClick={() => setDay(new Date())} className="btn-ghost h-9">Bugun</button>
+          <button onClick={() => setDay(new Date())} className={`btn-ghost h-9 ${isToday ? "text-primary" : ""}`}>Bugun</button>
           <button onClick={() => shift(1)} className="btn-ghost h-9 px-2"><ChevronRight className="h-4 w-4" /></button>
           <input
             type="date"
             className="input ml-2 h-9 w-auto py-1"
-            value={`${day.getFullYear()}-${String(day.getMonth() + 1).padStart(2, "0")}-${String(day.getDate()).padStart(2, "0")}`}
-            onChange={(e) => setDay(new Date(e.target.value))}
+            value={ymd(day)}
+            onChange={(e) => { if (e.target.value) setDay(parseYmd(e.target.value)); }}
           />
           <span className="ml-auto inline-flex items-center gap-1 text-sm text-muted-foreground">
             <Calendar className="h-4 w-4" /> {rows?.length ?? 0} qabul
@@ -160,7 +174,6 @@ function AppointmentsPage() {
       {(creating || editing) && (
         <ApptForm
           appt={editing}
-          patients={patients}
           doctors={doctors}
           clinicId={clinic!.id}
           defaultDay={day}
@@ -172,9 +185,8 @@ function AppointmentsPage() {
   );
 }
 
-function ApptForm({ appt, patients, doctors, clinicId, defaultDay, onClose, onSaved }: {
+function ApptForm({ appt, doctors, clinicId, defaultDay, onClose, onSaved }: {
   appt: Appt | null;
-  patients: LookupPatient[];
   doctors: LookupDoctor[];
   clinicId: string;
   defaultDay: Date;
@@ -183,10 +195,12 @@ function ApptForm({ appt, patients, doctors, clinicId, defaultDay, onClose, onSa
 }) {
   const initStart = appt ? new Date(appt.starts_at) : (() => { const d = new Date(defaultDay); d.setHours(10, 0, 0, 0); return d; })();
   const [form, setForm] = useState({
-    patient_id: appt?.patient_id ?? "",
+    patient_name: appt?.patients?.full_name ?? "",
+    patient_phone: appt?.patients?.phone ?? "",
     doctor_id: appt?.doctor_id ?? "",
     service_type: appt?.service_type ?? "",
-    starts_at: toLocalInput(initStart),
+    date: ymd(initStart),
+    time: hm(initStart),
     notes: appt?.notes ?? "",
     status: (appt?.status ?? "waiting") as Status,
   });
@@ -194,51 +208,117 @@ function ApptForm({ appt, patients, doctors, clinicId, defaultDay, onClose, onSa
 
   const save = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!form.patient_id) return toast.error("Bemorni tanlang");
-    if (!form.starts_at) return toast.error("Vaqtni tanlang");
+    if (!form.patient_name.trim()) return toast.error("Bemor ismini kiriting");
+    if (!form.patient_phone.trim()) return toast.error("Telefon raqamini kiriting");
+    if (!form.date) return toast.error("Sanani tanlang");
+    if (!form.time) return toast.error("Vaqtni tanlang");
     setSaving(true);
-    const payload = {
-      patient_id: form.patient_id,
-      doctor_id: form.doctor_id || null,
-      service_type: form.service_type || null,
-      starts_at: new Date(form.starts_at).toISOString(),
-      notes: form.notes || null,
-      status: form.status,
-      clinic_id: clinicId,
-    };
-    const { error } = appt
-      ? await supabase.from("appointments").update(payload).eq("id", appt.id)
-      : await supabase.from("appointments").insert(payload);
-    setSaving(false);
-    if (error) return toast.error(error.message);
-    toast.success(appt ? "Yangilandi" : "Qabul qo‘shildi");
-    onSaved();
+
+    const [y, m, d] = form.date.split("-").map(Number);
+    const [hh, mm] = form.time.split(":").map(Number);
+    const startsAt = new Date(y, (m || 1) - 1, d || 1, hh || 0, mm || 0, 0, 0);
+
+    try {
+      let patientId = appt?.patient_id ?? "";
+      const name = form.patient_name.trim();
+      const phone = form.patient_phone.trim();
+
+      if (appt) {
+        // Update the linked patient's name / phone too.
+        await supabase.from("patients").update({ full_name: name, phone }).eq("id", appt.patient_id);
+        patientId = appt.patient_id;
+      } else {
+        // Find an existing patient by phone in this clinic, otherwise create one.
+        const { data: existing } = await supabase
+          .from("patients")
+          .select("id")
+          .eq("clinic_id", clinicId)
+          .eq("phone", phone)
+          .limit(1)
+          .maybeSingle();
+        if (existing?.id) {
+          patientId = existing.id;
+          await supabase.from("patients").update({ full_name: name }).eq("id", existing.id);
+        } else {
+          const { data: created, error: cErr } = await supabase
+            .from("patients")
+            .insert({ clinic_id: clinicId, full_name: name, phone })
+            .select("id")
+            .single();
+          if (cErr) throw cErr;
+          patientId = created.id;
+        }
+      }
+
+      const payload = {
+        patient_id: patientId,
+        doctor_id: form.doctor_id || null,
+        service_type: form.service_type || null,
+        starts_at: startsAt.toISOString(),
+        notes: form.notes || null,
+        status: form.status,
+        clinic_id: clinicId,
+      };
+      const { error } = appt
+        ? await supabase.from("appointments").update(payload).eq("id", appt.id)
+        : await supabase.from("appointments").insert(payload);
+      if (error) throw error;
+
+      toast.success(appt ? "Yangilandi" : "Qabul qo‘shildi");
+      onSaved();
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Saqlashda xatolik");
+    } finally {
+      setSaving(false);
+    }
   };
 
   return (
     <Modal open onClose={onClose} title={appt ? "Qabulni tahrirlash" : "Yangi qabul"}>
       <form onSubmit={save} className="space-y-3">
         <label className="block">
-          <span className="mb-1 block text-xs font-medium text-muted-foreground">Bemor *</span>
-          <select className="input" value={form.patient_id} onChange={(e) => setForm({ ...form, patient_id: e.target.value })} required>
-            <option value="">— Tanlang —</option>
-            {patients.map((p) => <option key={p.id} value={p.id}>{p.full_name} • {p.phone}</option>)}
-          </select>
+          <span className="mb-1 block text-xs font-medium text-muted-foreground">Bemor ismi *</span>
+          <input
+            className="input"
+            value={form.patient_name}
+            onChange={(e) => setForm({ ...form, patient_name: e.target.value })}
+            placeholder="Ism Familiya"
+            required
+          />
         </label>
+        <label className="block">
+          <span className="mb-1 block text-xs font-medium text-muted-foreground">Telefon raqami *</span>
+          <input
+            className="input"
+            value={form.patient_phone}
+            onChange={(e) => setForm({ ...form, patient_phone: e.target.value })}
+            placeholder="+998 90 123 45 67"
+            required
+          />
+        </label>
+        <div className="grid grid-cols-2 gap-3">
+          <label className="block">
+            <span className="mb-1 block text-xs font-medium text-muted-foreground">Sana *</span>
+            <input type="date" className="input" value={form.date} onChange={(e) => setForm({ ...form, date: e.target.value })} required />
+          </label>
+          <label className="block">
+            <span className="mb-1 block text-xs font-medium text-muted-foreground">Vaqt *</span>
+            <input type="time" className="input" value={form.time} onChange={(e) => setForm({ ...form, time: e.target.value })} required />
+          </label>
+        </div>
         <label className="block">
           <span className="mb-1 block text-xs font-medium text-muted-foreground">Shifokor</span>
           <select className="input" value={form.doctor_id} onChange={(e) => setForm({ ...form, doctor_id: e.target.value })}>
-            <option value="">—</option>
+            <option value="">— Tanlang —</option>
             {doctors.map((d) => <option key={d.id} value={d.id}>{d.full_name}</option>)}
           </select>
+          {doctors.length === 0 && (
+            <span className="mt-1 block text-xs text-muted-foreground">Faol shifokor yo‘q — «Shifokorlar» bo‘limidan qo‘shing.</span>
+          )}
         </label>
         <label className="block">
           <span className="mb-1 block text-xs font-medium text-muted-foreground">Xizmat turi</span>
           <input className="input" value={form.service_type} onChange={(e) => setForm({ ...form, service_type: e.target.value })} placeholder="Plomba, tozalash, …" />
-        </label>
-        <label className="block">
-          <span className="mb-1 block text-xs font-medium text-muted-foreground">Vaqt *</span>
-          <input type="datetime-local" className="input" value={form.starts_at} onChange={(e) => setForm({ ...form, starts_at: e.target.value })} required />
         </label>
         <label className="block">
           <span className="mb-1 block text-xs font-medium text-muted-foreground">Holat</span>

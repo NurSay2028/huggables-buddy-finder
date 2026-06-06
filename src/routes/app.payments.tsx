@@ -234,11 +234,16 @@ function PaymentForm({ patients, doctors, clinicId, onClose, onSaved }: {
     return patients.filter((p) => p.full_name.toLowerCase().includes(q));
   }, [patients, patientQuery]);
 
-  const selectPatient = (p: { id: string; full_name: string }) => {
+  const selectPatient = (p: LookupPatient) => {
     setForm((f) => ({ ...f, patient_id: p.id }));
     setPatientQuery(p.full_name);
     setShowList(false);
   };
+
+  const selectedPatient = useMemo(
+    () => patients.find((p) => p.id === form.patient_id) ?? null,
+    [patients, form.patient_id],
+  );
 
   const selectDoctor = (id: string) => {
     const doc = doctors.find((d) => d.id === id);

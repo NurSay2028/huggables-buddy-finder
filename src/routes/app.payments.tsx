@@ -58,8 +58,8 @@ function PaymentsPage() {
   useEffect(() => {
     void load();
     if (clinic) {
-      supabase.from("patients").select("id,full_name").eq("clinic_id", clinic.id).order("full_name")
-        .then(({ data }) => setPatients((data ?? []) as { id: string; full_name: string }[]));
+      supabase.from("patients").select("id,full_name,phone,debt").eq("clinic_id", clinic.id).order("full_name")
+        .then(({ data }) => setPatients((data ?? []) as LookupPatient[]));
       supabase.from("doctors").select("id,full_name,salary_percentage").eq("clinic_id", clinic.id).eq("active", true).order("full_name")
         .then(({ data }) => setDoctors((data ?? []) as LookupDoctor[]));
     }

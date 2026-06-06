@@ -325,6 +325,24 @@ function PaymentForm({ patients, doctors, clinicId, onClose, onSaved }: {
           </div>
         </label>
 
+        {selectedPatient && (
+          <div className="rounded-lg border border-border bg-muted/40 p-3 text-sm">
+            <div className="font-medium">{selectedPatient.full_name}</div>
+            <div className="mt-1 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs">
+              <span className="text-muted-foreground">
+                📞 {selectedPatient.phone || "Telefon yo‘q"}
+              </span>
+              {Number(selectedPatient.debt) > 0 ? (
+                <span className="font-medium text-destructive">
+                  Qarz: {fmtSum(selectedPatient.debt)}
+                </span>
+              ) : (
+                <span className="text-muted-foreground">Qarz yo‘q</span>
+              )}
+            </div>
+          </div>
+        )}
+
         <label className="block">
           <span className="mb-1 block text-xs font-medium text-muted-foreground">Shifokor *</span>
           <select className="input" value={form.doctor_id} onChange={(e) => selectDoctor(e.target.value)} required>

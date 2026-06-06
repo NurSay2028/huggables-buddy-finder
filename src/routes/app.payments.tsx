@@ -39,7 +39,7 @@ function PaymentsPage() {
   const [rows, setRows] = useState<Payment[] | null>(null);
   const [creating, setCreating] = useState(false);
   const [query, setQuery] = useState("");
-  const [patients, setPatients] = useState<{ id: string; full_name: string }[]>([]);
+  const [patients, setPatients] = useState<LookupPatient[]>([]);
   const [doctors, setDoctors] = useState<LookupDoctor[]>([]);
 
   const load = async () => {
